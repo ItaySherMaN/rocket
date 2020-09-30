@@ -86,7 +86,7 @@ class Vector {
 	}
 
 	distFromPos(pos) {
-		 // TODO
+		return Math.sqrt(Math.pow(this.x - pos.x) + Math.pow(this.y - pos.y))
 	}
 
 }
