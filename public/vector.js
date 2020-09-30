@@ -84,4 +84,8 @@ class Vector {
 		return new Vector(x,y)
 	}
 
+	distFromPos(pos) {
+		 // TODO
+	}
+
 }

@@ -12,9 +12,4 @@ class Planet {
 	constructor() {
 		// TODO
 	}
-
-	// calculate distance from vector
-	distFromPos(vector) {
-		// TODO
-	}
 }
