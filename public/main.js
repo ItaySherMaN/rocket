@@ -28,7 +28,7 @@ const E			= Math.E
 const image_width = 600
 const image_height = 400
 
-// your dynamic variables here
+// your dynamic letiables here
 let ship = null
 let planets = null
 let rocket_model_no_fire = null
@@ -46,7 +46,9 @@ function init() {
 }
 
 function update() {
-	//ship.update(planets, coin)
+	planets = null
+	coin = null
+	ship.update(planets, coin)
 }
 
 function render() {
@@ -58,14 +60,28 @@ function render() {
 document.body.addEventListener("keydown", function(event) {
 	switch (event.keyCode) {
 		case UP:
-			ship.thrusting = true
+			ship.forward = true
+			break
+		case LEFT:
+			ship.left = true
+			break
+		case RIGHT:
+			ship.right = true
 			break
 	}
 })
 
 document.body.addEventListener("keyup", function(event) {
 	switch (event.keyCode) {
-
+		case UP:
+			ship.forward = false
+			break
+		case LEFT:
+			ship.left = false
+			break
+		case RIGHT:
+			ship.right = false
+			break
 	}
 })
 
