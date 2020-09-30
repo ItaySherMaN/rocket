@@ -13,7 +13,7 @@ function setup(images) {
 }
 
 function init() {
-    ship = new Ship(width / 2, height / 2)
+    ship = new Ship(width / 2, height / 2, 0, 0)
     //p1 = new Planet(...)
     //p2 = new Planet(...)
     //planets = [p1, p2]
