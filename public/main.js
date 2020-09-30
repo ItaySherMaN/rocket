@@ -25,24 +25,28 @@ const PI		= Math.PI
 const E			= Math.E
 
 // your constants here
-const ship = new Ship()
-// your dynamic variables here
 
+
+// your dynamic variables here
+let ship = null
+let planets = null
 
 function setup() {
 
 }
 
 function init() {
-
+    ship = new Ship(width / 2, height / 2)
+    planets = []
 }
 
 function update() {
-    ship.update(planets)
+
 }
 
 function render() {
-
+    context.fillStyle = 'rgb(53, 32, 106)'
+    context.fillRect(0, 0, width, height)
 }
 
 document.body.addEventListener("keydown", function(event) {
