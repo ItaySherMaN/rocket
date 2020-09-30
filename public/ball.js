@@ -4,10 +4,17 @@ pos: vector
 vel: velocity vector
 */
 class Ball {
-    constructor(pos, vel, mass) {
+    static G = 1
+
+    constructor(pos, vel, radius) {
         this.pos = pos
         this.vel = vel
-        this.mass = mass
+        this.radius = radius
+        this.mass = Ball.G * this.radius * this.radius
+    }
+
+    update() {
+
     }
 
     static collide(ball_1, ball_2) {
@@ -27,4 +34,26 @@ class Ball {
         ball_1.vel = u1.add(v1_p)
         ball_2.vel = u2.add(v2_p)
     }
+}
+
+
+function right_time(ball_1, ball_2) {
+    const a1 = ball_1.pos.x
+    const a2 = ball_1.vel.x
+    const a3 = ball_2.pos.x
+    const a4 = ball_2.vel.x
+    const a5 = ball_1.pos.y
+    const a6 = ball_1.vel.y
+    const a7 = ball_2.pos.y
+    const a8 = ball_2.vel.y
+    const a9 = ball_1.radius
+    const a10 = ball_2.radius
+
+    const a = a2*a2 - 2*a2*a4 + a4*a4 + a6*a6 - 2*a6*a8 + a8*a8
+    const b = 2*a1*a2 - 2*a2*a3 - 2*a1*a4 + 2*a3*a4 + 2*a5*a6 - 2*a6*a7 - 2*a5*a8 + 2*a7*a8
+    const c = a1*a1 - 2*a1*a3 + a3*a3 + a5*a5 - 2*a5*a7 + a7*a7 - a9*a9 - 2*a9*a10 - a10*a10
+
+    // const first = (-b + Math.sqrt(b*b - 4*a*c)) / (a+a)
+    const second = (-b - Math.sqrt(b*b - 4*a*c)) / (a+a)
+    return second
 }
