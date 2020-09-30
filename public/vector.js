@@ -24,16 +24,15 @@ class Vector {
 	}
 
 	add(v) {
-		return new Vector(this.x + v.x, this.y + other.y)
+		return new Vector(this.x + v.x, this.y + v.y)
 	}
 
 	subtract(v) {
-		return new Vector(this.x - v.x, this.y - other.y)
+		return new Vector(this.x - v.x, this.y - v.y)
 	}
 
-	multiply(s) {
-		this.x *= s
-		this.y *= s
+	multiply(s) {		
+		return new Vector(this.x * s, this.y * s)
 	}
 
 	equals(v) {
@@ -80,8 +79,8 @@ class Vector {
 	}
 
 	static fromAngle(angle, mag){
-		x = Math.cos(a) * mag
-		y = Math.sin(a) * mag
+		x = Math.cos(angle) * mag
+		y = Math.sin(angle) * mag
 		return new Vector(x,y)
 	}
 

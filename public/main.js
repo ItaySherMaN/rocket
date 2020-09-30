@@ -1,7 +1,7 @@
 
 // your constants here
-const image_width = 600
-const image_height = 400
+const image_width = 100
+const image_height = 100
 
 // your dynamic letiables here
 let ship = null
@@ -13,7 +13,7 @@ function setup(images) {
 }
 
 function init() {
-    ship = new Ship(width / 2, height / 2, 0, 0)
+    ship = new Ship(width / 2, height / 2)
     //p1 = new Planet(...)
     //p2 = new Planet(...)
     //planets = [p1, p2]
@@ -34,7 +34,7 @@ function render() {
     angleInRadians = ship.dir
     context.translate(x, y);
 	context.rotate(angleInRadians);
-	context.drawImage(rocket_model_no_fire, -width / 2, -height / 2, width, height);
+	context.drawImage(rocket_model_no_fire, -image_width / 2, -image_height / 2, image_width, image_height);
 	context.rotate(-angleInRadians);
 	context.translate(-x, -y);
 }

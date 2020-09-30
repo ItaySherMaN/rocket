@@ -13,13 +13,14 @@ right: boolean
 */
 
 class Ship {
-	constructor(posx, posy, vel, dir) {
+	constructor(posx, posy) {
 		this.pos = new Vector(posx, posy)
-		this.vel = vel
-		this.dir = dir
+		this.vel = new Vector(0,0)
+		this.dir = 5
 		this.forward = false
 		this.left = false
 		this.right = false
+		this.mass = 1
 	}
 
 	// recives force as vector
@@ -72,22 +73,22 @@ class Ship {
 				collisionArray[1] = true
 			}
 		}
-		if (forward) {
-			forceVector = Vector.fromAngle(dir, forwardForce)
+		if (this.forward) {
+			let forceVector = Vector.fromAngle(this.dir, Ship.forwardForce)
 			allForces = allForces.add(forceVector)
 		}
-		if (left) {
-			this.dir += angleChange
+		if (this.left) {
+			this.dir -= Ship.angleChange
 		}
-		if (right) {
-			this.dir -= angleChange
+		if (this.right) {
+			this.dir += Ship.angleChange
 		}
-		correctAngle(dir)
-		activateForce(allForces)
-		this.pos = this.pos.add(vel)
+		this.correctAngle(this.dir)
+		this.activateForce(allForces)
+		this.pos = this.pos.add(this.vel)
 		return collisionArray
 	}
 
 	static forwardForce = 1 / 100
-	static angleChange = (2 * PI) / 1000
+	static angleChange = (2 * PI) / 100
 }
