@@ -77,4 +77,13 @@ class Vector {
 	clone() {
 		return new Vector(this.x, this.y);
 	}
+
+	static from_angle(angle, mag){
+		x = Math.cos(a) * mag
+		y = Math.sin(a) * mag
+		return new Vector(x,y)
+	}
+
 }
+
+
