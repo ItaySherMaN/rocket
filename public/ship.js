@@ -12,8 +12,6 @@ right: boolean
 
 */
 
-const PI		= Math.PI
-
 class Ship {
 	constructor(posx, posy, vel, dir) {
 		this.pos = new Vector(posx, posy)
@@ -52,9 +50,9 @@ class Ship {
 		}
 	}
 
-	// updates variables 
+	// updates variables
 	/*
-	* returns boolean array: [planetCollision, coinCollision] 
+	* returns boolean array: [planetCollision, coinCollision]
 	*/
 	update(planets, coin) {
 		let collisionArray = [false, false]
