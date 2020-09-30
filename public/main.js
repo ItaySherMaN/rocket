@@ -25,31 +25,34 @@ const PI		= Math.PI
 const E			= Math.E
 
 // your constants here
-
+const image_width = 600
+const image_height = 400
 
 // your dynamic variables here
 let ship = null
 let planets = null
+let rocket_model_no_fire = null
 
-function setup() {
-
+function setup(images) {
+	rocket_model_no_fire = images[0]
 }
 
 function init() {
     ship = new Ship(width / 2, height / 2)
-    p1 = new Planet(...)
-    p2 = new Planet(...)
-    planets = [p1, p2]
-    coin = new Coin(...)
+    //p1 = new Planet(...)
+    //p2 = new Planet(...)
+    //planets = [p1, p2]
+    //coin = new Coin(...)
 }
 
 function update() {
-	ship.update(planets, coin)
+	//ship.update(planets, coin)
 }
 
 function render() {
-    context.fillStyle = 'rgb(53, 32, 106)'
+	context.fillStyle = 'rgb(53, 32, 106)'
     context.fillRect(0, 0, width, height)
+	context.drawImage(rocket_model_no_fire, ship.pos.x, ship.pos.y, image_width, image_height)
 }
 
 document.body.addEventListener("keydown", function(event) {
@@ -81,6 +84,23 @@ document.body.addEventListener("mousemove", function(event) {
 	mouseY = event.clientY - ctxTop
 })
 
+const loadImage = function(url) {
+	return new Promise((resolve, reject) => {
+		const image = new Image()
+
+		image.addEventListener('load', () => {
+			resolve(image)
+		})
+
+		image.src = url
+	})
+}
+
+Promise.all([loadImage('rocket_model_no_fire.png')]).then(images => {
+    setup(images)
+    init()
+    run()
+})
 
 function run() {
 	update()
@@ -88,7 +108,3 @@ function run() {
 
 	requestAnimationFrame(run)
 }
-
-setup()
-init()
-run()
