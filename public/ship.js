@@ -4,6 +4,7 @@ class ship
 pos: vector
 vel: vector
 dir: double
+mass: int
 
 
 */
@@ -28,7 +29,9 @@ class Ship {
 	planetPower(planet) {
 		var dist = planet.distFromPos(this.pos);
 		var powDir = this.pos - planet.pos;
-		powerVector = Vector.
+		var powerToActivate = (this.mass * planet.mass) / Math.pow(dist, 2);
+		powerVector = Vector.fromAngle(powDir.getAngle(), powerToActivate)
+
 		if (dist <= 0){
 			death();
 			return;
@@ -42,5 +45,6 @@ class Ship {
 		for (i = 0; i < planets.length; i++) {
 			activatePower(planetPower(planets[i]));
 		}
+		pos += vel;
 	}
 }
