@@ -37,15 +37,14 @@ function setup() {
 
 function init() {
     ship = new Ship(width / 2, height / 2)
-    planets = []
+    p1 = new Planet(...)
+    p2 = new Planet(...)
+    planets = [p1, p2]
+    coin = new Coin(...)
 }
 
 function update() {
-<<<<<<< HEAD
-	ship.update(planets)
-=======
-
->>>>>>> 352a22c15935b6efff4026f831d1a541d423ab70
+	ship.update(planets, coin)
 }
 
 function render() {

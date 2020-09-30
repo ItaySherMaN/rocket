@@ -55,7 +55,7 @@ class Vector {
 
 	rotate(a){
 		b = this.toAngles()
-		this.set_angle((a + b) % 360)
+		this.setAngle(a + b)
 	}
 
 	min() {
@@ -66,7 +66,7 @@ class Vector {
 		return Math.max(this.x, this.y);
 	}
 
-	toAngles() {
+	getAngle() {
 		return Math.atan2(this.y, this.x);
 	}
 
