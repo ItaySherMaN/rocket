@@ -54,7 +54,14 @@ function update() {
 function render() {
 	context.fillStyle = 'rgb(53, 32, 106)'
     context.fillRect(0, 0, width, height)
-	context.drawImage(rocket_model_no_fire, ship.pos.x, ship.pos.y, image_width, image_height)
+    x = ship.pos.x
+    y = ship.pos.y
+    angleInRadians = ship.dir
+    context.translate(x, y);
+	context.rotate(angleInRadians);
+	context.drawImage(rocket_model_no_fire, -width / 2, -height / 2, width, height);
+	context.rotate(-angleInRadians);
+	context.translate(-x, -y);
 }
 
 document.body.addEventListener("keydown", function(event) {
