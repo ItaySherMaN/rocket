@@ -47,7 +47,7 @@ class Vector {
 		return Math.sqrt(this.dot(this));
 	}
 
-	set_angle(a){
+	setAngle(a){
 		magnitude = this.mag()
 		this.x = Math.cos(a) * magnitude
 		this.y = Math.sin(a) * magnitude
@@ -78,7 +78,7 @@ class Vector {
 		return new Vector(this.x, this.y);
 	}
 
-	static from_angle(angle, mag){
+	static fromAngle(angle, mag){
 		x = Math.cos(a) * mag
 		y = Math.sin(a) * mag
 		return new Vector(x,y)

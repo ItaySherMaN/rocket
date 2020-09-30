@@ -38,7 +38,7 @@ function init() {
 }
 
 function update() {
-    ship.update(planets)
+	ship.update(planets)
 }
 
 function render() {
@@ -47,9 +47,9 @@ function render() {
 
 document.body.addEventListener("keydown", function(event) {
 	switch (event.keyCode) {
-        case UP:
-            ship.thrusting = true
-            break
+		case UP:
+			ship.thrusting = true
+			break
 	}
 })
 
