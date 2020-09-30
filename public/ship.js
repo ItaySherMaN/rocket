@@ -12,8 +12,6 @@ right: boolean
 
 */
 
-const PI		= Math.PI
-
 class Ship {
 	constructor(posx, posy, vel, dir) {
 		this.pos = new Vector(posx, posy)
