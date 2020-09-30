@@ -2,8 +2,6 @@
 class ball:
 pos: vector
 vel: velocity vector
-
-
 */
 class Ball {
     constructor(pos, vel, mass) {
