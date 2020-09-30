@@ -1,4 +1,4 @@
-/* 
+/*
 class Planet
 
 pos: vector

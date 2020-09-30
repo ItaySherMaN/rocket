@@ -1,7 +1,5 @@
 
 // your constants here
-const image_width = 100
-const image_height = 100
 
 // your dynamic letiables here
 let ship = null
@@ -23,20 +21,31 @@ function init() {
 function update() {
 	planets = null
 	coin = null
-	ship.update(planets, coin)
+	ship.update2(planets, coin)
 }
 
 function render() {
-	context.fillStyle = 'rgb(53, 32, 106)'
+    renderBackground()
+    renderShip()
+}
+
+function renderBackground() {
+    context.fillStyle = 'rgb(53, 32, 106)'
     context.fillRect(0, 0, width, height)
-    x = ship.pos.x
-    y = ship.pos.y
-    angleInRadians = ship.dir
+}
+
+function renderShip() {
+    const x = ship.pos.x
+    const y = ship.pos.y
+    const w = Ship.img_width
+    const h = Ship.img_height
+    const angle = ship.dir
     context.translate(x, y);
-	context.rotate(angleInRadians);
-	context.drawImage(rocket_model_no_fire, -image_width / 2, -image_height / 2, image_width, image_height);
-	context.rotate(-angleInRadians);
-	context.translate(-x, -y);
+    context.rotate(angle);
+    context.drawImage(rocket_model_no_fire, -w / 2, -h / 2, w, h);
+    context.rotate(-angle);
+    context.translate(-x, -y);
+    console.log(x, y, w, h, angle)
 }
 
 document.body.addEventListener("keydown", function(event) {
@@ -82,16 +91,11 @@ document.body.addEventListener("mousemove", function(event) {
 	mouseY = event.clientY - ctxTop
 })
 
-const loadImage = function(url) {
-	return new Promise((resolve, reject) => {
-		const image = new Image()
+function run() {
+	update()
+	render()
 
-		image.addEventListener('load', () => {
-			resolve(image)
-		})
-
-		image.src = url
-	})
+	requestAnimationFrame(run)
 }
 
 Promise.all([loadImage('rocket_model_no_fire.png')]).then(images => {
@@ -99,10 +103,3 @@ Promise.all([loadImage('rocket_model_no_fire.png')]).then(images => {
     init()
     run()
 })
-
-function run() {
-	update()
-	render()
-
-	requestAnimationFrame(run)
-}

@@ -23,3 +23,16 @@ const SPACE		= 32
 // math constants
 const PI		= Math.PI
 const E			= Math.E
+
+// util functions
+function loadImage(url) {
+    return new Promise((resolve, reject) => {
+		const image = new Image()
+
+		image.addEventListener('load', () => {
+			resolve(image)
+		})
+
+		image.src = url
+	})
+}

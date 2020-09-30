@@ -18,9 +18,7 @@ class Vector {
     }
 
 	negative() {
-		this.x = -this.x
-		this.y = -this.y
-		return this;
+        return new Vector(-this.x, -this.y)
 	}
 
 	add(v) {
@@ -31,7 +29,7 @@ class Vector {
 		return new Vector(this.x - v.x, this.y - v.y)
 	}
 
-	multiply(s) {		
+	multiply(s) {
 		return new Vector(this.x * s, this.y * s)
 	}
 
@@ -54,7 +52,7 @@ class Vector {
 	}
 
 	rotate(a){
-		b = this.toAngles()
+		b = this.getAngle()
 		this.setAngle(a + b)
 	}
 
@@ -79,13 +77,15 @@ class Vector {
 	}
 
 	static fromAngle(angle, mag){
-		x = Math.cos(angle) * mag
-		y = Math.sin(angle) * mag
-		return new Vector(x,y)
+		const x = Math.cos(angle) * mag
+		const y = Math.sin(angle) * mag
+		return new Vector(x, y)
 	}
 
 	distFromPos(pos) {
-		return Math.sqrt(Math.pow(this.x - pos.x) + Math.pow(this.y - pos.y))
+        const dx = pos.x - this.x
+        const dy = pos.y - this.y
+        return Math.sqrt(dx * dx + dy * dy)
 	}
 
 }
