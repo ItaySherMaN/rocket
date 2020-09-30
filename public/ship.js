@@ -52,5 +52,6 @@ class Ship {
 			collisionArray[1] = true
 		}
 		pos += vel
+		return collisionArray
 	}
 }
