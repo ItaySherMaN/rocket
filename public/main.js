@@ -25,12 +25,12 @@ const PI		= Math.PI
 const E			= Math.E
 
 // your constants here
-
+const ship = new Ship()
 // your dynamic variables here
 
 
 function setup() {
-    
+
 }
 
 function init() {
@@ -38,24 +38,26 @@ function init() {
 }
 
 function update() {
-
+    ship.update(planets)
 }
 
 function render() {
 
 }
 
-// document.body.addEventListener("keydown", function(event) {
-// 	switch (event.keyCode) {
-//
-// 	}
-// })
+document.body.addEventListener("keydown", function(event) {
+	switch (event.keyCode) {
+        case UP:
+            ship.thrusting = true
+            break
+	}
+})
 
-// document.body.addEventListener("keyup", function(event) {
-// 	switch (event.keyCode) {
-//
-// 	}
-// })
+document.body.addEventListener("keyup", function(event) {
+	switch (event.keyCode) {
+
+	}
+})
 
 document.body.addEventListener("mousedown", function(event) {
 	mouseDown = true
