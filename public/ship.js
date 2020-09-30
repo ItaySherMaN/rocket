@@ -15,11 +15,6 @@ class Ship {
 		this.dir = dir
 	}
 
-	// this happens when you die
-	death() {
-		// needs implementation
-	}
-
 	// recives power as vector
 	activatePower(power) {
 		this.vel += power
@@ -27,8 +22,8 @@ class Ship {
 
 	// calculate power activated on me from planet
 	planetPower(planet) {
-		var dist = planet.distFromPos(this.pos)
-		if (dist <= 0) {
+		var dist = this.pos.distFromPos(planet.pos)
+		if (dist <= planet.radius) {
 			return -1
 		}
 		var powDir = this.pos - planet.pos
@@ -51,6 +46,10 @@ class Ship {
 				return collisionArray
 			}
 			activatePower(plPow)
+		}
+		distFromCoin = this.pos.distFromPos(coin.pos)
+		if (distFromCoin <= coin.radius) {
+			collisionArray[1] = true
 		}
 		pos += vel
 	}
