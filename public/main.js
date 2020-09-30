@@ -41,11 +41,7 @@ function init() {
 }
 
 function update() {
-<<<<<<< HEAD
 	ship.update(planets)
-=======
-
->>>>>>> 352a22c15935b6efff4026f831d1a541d423ab70
 }
 
 function render() {

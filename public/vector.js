@@ -66,7 +66,7 @@ class Vector {
 		return Math.max(this.x, this.y);
 	}
 
-	toAngles() {
+	getAngle() {
 		return Math.atan2(this.y, this.x);
 	}
 
