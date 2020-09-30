@@ -31,8 +31,9 @@ class Vector {
 		return new Vector(this.x - v.x, this.y - other.y)
 	}
 
-	multiply(v) {
-		return new Vector(this.x * v.x + this.y * v.y)
+	multiply(s) {
+		this.x *= s
+		this.y *= s
 	}
 
 	equals(v) {
