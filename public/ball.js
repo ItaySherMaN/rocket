@@ -11,4 +11,8 @@ class Ball {
         this.vel = vel
         this.mass = mass
     }
+
+    static collide(ball_1, ball_2) {
+        
+    }
 }
