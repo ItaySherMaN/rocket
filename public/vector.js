@@ -12,13 +12,13 @@ rotate(angle): rotate vector by angle
 */
 
 class Vector {
-    constructor(x, y) {
-        this.x = x
-        this.y = y
-    }
+	constructor(x, y) {
+		this.x = x
+		this.y = y
+	}
 
 	negative() {
-        return new Vector(-this.x, -this.y)
+		return new Vector(-this.x, -this.y)
 	}
 
 	add(v) {
@@ -83,9 +83,9 @@ class Vector {
 	}
 
 	distFromPos(pos) {
-        const dx = pos.x - this.x
-        const dy = pos.y - this.y
-        return Math.sqrt(dx * dx + dy * dy)
+		const dx = pos.x - this.x
+		const dy = pos.y - this.y
+		return Math.sqrt(dx * dx + dy * dy)
 	}
 
 }

@@ -7,8 +7,8 @@ const ctxLeft	= canvas.getBoundingClientRect().left	// left x of the canvas
 const ctxTop	= canvas.getBoundingClientRect().top	// top y of the canvas
 
 // mouse locations
-let mouseX		= width / 2	 // current mouse X position
-let mouseY		= height / 2 // current mouse Y position
+let mouseX		= 0			 // current mouse X position
+let mouseY		= 0			 // current mouse Y position
 let pmouseX		= mouseX	 // mouse X position before 1 / 60 seconds
 let pmouseY		= mouseY	 // mouse Y position before 1 / 60 seconds
 let mouseDown	= false
@@ -26,7 +26,7 @@ const E			= Math.E
 
 // util functions
 function loadImage(url) {
-    return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const image = new Image()
 
 		image.addEventListener('load', () => {
