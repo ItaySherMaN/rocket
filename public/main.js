@@ -1,8 +1,6 @@
 
 // your constants here
 const coin_img_name = 'coin.png'
-const gameOver_img_name = 'game_over.png'
-const newGame_img_name = 'new_game.png'
 const minimal_distance = Math.min(width, height) / 3
 const planet_min_speed = 1
 const planet_max_speed = 2
@@ -26,7 +24,6 @@ const ship_img_names = [
 ]
 
 // your dynamic letiables here
-let game_over_img = null
 let score = 0
 let focus_ship = false
 let gameOverFlag = false
@@ -66,9 +63,7 @@ function setup(images) {
 	rocket_model_no_fire = images[0]
 	rocket_model_yes_fire = images[1]
 	coin_image = images[2]
-	game_over_img = images[3]
-	new_game_img = images[4]
-	planet_images = images.slice(5, images.length)
+	planet_images = images.slice(3, images.length)
 }
 
 function init() {
@@ -99,11 +94,7 @@ function gameOver() {
 }
 
 function renderGameOver() {
-	context.drawImage(game_over_img, 0, 0, width, height / 2)
-	context.font = '64px f'
-	context.fillStyle = 'black'
-    context.fillText(score, 0, height / 2, width / 2)
-	context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
+	//TODO
 }
 
 function coinCollision() {
@@ -119,8 +110,9 @@ function update() {
 	else if(collisionArray[1]){
 		coinCollision()
 	}
-	Ball.updateBalls(balls) // .concat([ship])
+	Ball.updateBalls(balls)
 	checkPlanets()
+	console.log(planets_renderer.length, planets.length)
 }
 
 function generatePlanet(min_speed, max_speed) {
@@ -153,6 +145,7 @@ function checkPlanets() {
 	for (let i = 0; i < planets.length; ++i) {
 		if (planets[i].isAway()) {
 			planets.splice(i, 1)
+			planets_renderer.splice(i, 1)
 			generatePlanet(planet_min_speed, planet_max_speed)
 		}
 	}
@@ -166,17 +159,15 @@ function render() {
 		renderShip()
 		renderCoin()
 		renderPlanets()
-		if(gameOverFlag){
-			renderGameOver()
-		}
 		context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 	} else {
 		renderShip()
 		renderCoin()
 		renderPlanets()
-		if(gameOverFlag){
-			renderGameOver()
-		}
+	}
+
+	if (gameOverFlag) {
+		renderGameOver()
 	}
 }
 
@@ -254,7 +245,7 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-Promise.all(ship_img_names.concat(coin_img_name).concat(gameOver_img_name).concat(newGame_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
+Promise.all(ship_img_names.concat(coin_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
 	setup(images)
 	init()
 	run()
