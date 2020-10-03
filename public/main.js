@@ -1,6 +1,8 @@
 
 // your constants here
 const coin_img_name = 'coin.png'
+const gameOver_img_name = 'game_over.png'
+const newGame_img_name = 'new_game.png'
 const minimal_distance = Math.min(width, height) / 3
 
 
@@ -23,6 +25,7 @@ const ship_img_names = [
 ]
 
 // your dynamic letiables here
+let game_over_img = null
 let score = 0
 let focus_ship = false
 let gameOverFlag = false
@@ -86,7 +89,9 @@ function setup(images) {
 	rocket_model_no_fire = images[0]
 	rocket_model_yes_fire = images[1]
 	coin_image = images[2]
-	planet_images = images.slice(3, images.length)
+	game_over_img = images[3]
+	new_game_img = images[4]
+	planet_images = images.slice(5, images.length)
 }
 
 function init() {
@@ -117,7 +122,11 @@ function gameOver() {
 }
 
 function renderGameOver() {
-	//TODO
+	context.drawImage(game_over_img, 0, 0, width, height / 2)
+	context.font = '64px f'
+	context.fillStyle = 'black'
+    context.fillText(score, 0, height / 2, width / 2)
+	context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
 }
 
 function coinCollision() {
@@ -126,7 +135,7 @@ function coinCollision() {
 }
 
 function update() {
-	collisionArray = ship.update(planets, coin)
+	let collisionArray = ship.update(planets, coin)
 	if(collisionArray[0]){
 		gameOver()
 	}
@@ -233,7 +242,7 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-Promise.all(ship_img_names.concat(coin_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
+Promise.all(ship_img_names.concat(coin_img_name).concat(gameOver_img_name).concat(newGame_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
 	setup(images)
 	init()
 	run()

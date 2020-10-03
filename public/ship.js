@@ -78,7 +78,7 @@ class Ship extends Ball {
 				allForces = allForces.add(plPow)
 			}
 			let distFromCoin = this.pos.distFromPos(coin.pos)
-			if (distFromCoin <= coin.radius) {
+			if (distFromCoin <= Coin.coin_radius + ship.radius) {
 				collisionArray[1] = true
 			}
 		}
