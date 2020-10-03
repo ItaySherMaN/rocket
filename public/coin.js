@@ -11,7 +11,7 @@ class Coin {
 
 	static coin_radius = 15
 
-	constructor() {
+	constructor(pos) {
 		let r = Coin.coin_radius
 		this.pos = pos
 	}

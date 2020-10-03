@@ -2,7 +2,8 @@
 // your constants here
 const coin_img_name = 'coin.png'
 const minimal_distance = Math.min(width, height) / 3
-
+const planet_min_speed = 3
+const planet_max_speed = 10
 
 const planet_img_names = [
 	"planet_1.png",
@@ -43,31 +44,7 @@ let coin_renderer = null
 let planet_images = null
 let coin_images = null
 
-function generatePlanet(min_speed, max_speed) {
-	let r = Math.max(width, height) * 0.8
-	let planet = null
-	let random_angle = 0.3
-	let done = false
-	while (!done) {
-		done = true
-		let angle = Math.random() * 2 * PI
-		planet = new Planet(
-			new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
-			Vector.fromAngle(PI + angle + Math.random() * random_angle * 2 - random_angle, Math.random() * (max_speed - min_speed) + min_speed),
-			Math.random() * 40 + 20
-		)
-		for (let i = 0; i < balls.length; ++i) {
-			if (Ball.areColliding(planet, balls[i])) {
-				done = false
-				break
-			}
-		}
-	}
 
-	planets.push(planet)
-	balls.push(planet)
-	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
-}
 
 function generateCoin(){
 	let done = false
@@ -101,7 +78,7 @@ function init() {
 	planets_renderer = []
 
 	for (let i = 0; i < 3; ++i) {
-		generatePlanet(3, 10)
+		generatePlanet(planet_min_speed, planet_max_speed)
 	}
 	generateCoin()
 
@@ -134,7 +111,42 @@ function update() {
 		coinCollision()
 	}
 	Ball.updateBalls(balls) // .concat([ship])
-	//checkPlanets()
+	checkPlanets()
+}
+
+function generatePlanet(min_speed, max_speed) {
+	let r = Math.max(width, height) * 0.8
+	let planet = null
+	let random_angle = 0.3
+	let done = false
+	while (!done) {
+		done = true
+		let angle = Math.random() * 2 * PI
+		planet = new Planet(
+			new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
+			Vector.fromAngle(PI + angle + Math.random() * random_angle * 2 - random_angle, Math.random() * (max_speed - min_speed) + min_speed),
+			Math.random() * 40 + 20
+		)
+		for (let i = 0; i < balls.length; ++i) {
+			if (Ball.areColliding(planet, balls[i])) {
+				done = false
+				break
+			}
+		}
+	}
+
+	planets.push(planet)
+	balls.push(planet)
+	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
+}
+
+function checkPlanets() {
+	for (let i = 0; i < planets.length; ++i) {
+		if (planets[i].isAway()) {
+			planets.splice(i, 1)
+			generatePlanet(planet_min_speed, planet_max_speed)
+		}
+	}
 }
 
 function render() {

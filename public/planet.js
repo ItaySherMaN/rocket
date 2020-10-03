@@ -33,27 +33,31 @@ class Planet extends Ball {
 	}
 
 	headedToScreen() {
-		const c1 = new Vector(0, 0),
-			  c2 = new Vector(width, 0),
-			  c3 = new Vector(0, height),
-			  c4 = new Vector(width, height)
-			  a = this.pos.getAngle()
+		const c1 = new Vector(0, 0).subtract(this.pos),
+			  c2 = new Vector(width, 0).subtract(this.pos),
+			  c3 = new Vector(0, height).subtract(this.pos),
+			  c4 = new Vector(width, height).subtract(this.pos)
 
-		let d1 = c1.subtract(this.pos)
-		let d2 = c4.subtract(this.pos)
+		const c = this.vel
+		let a = c1
+		let b = c4
 
-		let a1 = c1.subtract(this.pos).getAngle()
-		let a2 = c4.subtract(this.pos).getAngle()
-		if (Math.min(a1, a2) < a < Math.max(a1, a2)) {
+		let ab = a.y * b.x - a.x * b.y
+		let cb = c.y * b.x - c.x * b.y
+		let ac = a.y * c.x - a.x * c.y
+
+		if ((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)) {
 			return true
 		}
 
-		a1 = c2.subtract(this.pos).getAngle()
-		a2 = c3.subtract(this.pos).getAngle()
-		if (Math.min(a1, a2) < a < Math.max(a1, a2)) {
-			return true
-		}
-		return false
+		a = c2
+		b = c3
+
+		ab = a.y * b.x - a.x * b.y
+		cb = c.y * b.x - c.x * b.y
+		ac = a.y * c.x - a.x * c.y
+
+		return (ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)
 	}
 
 
