@@ -7,7 +7,9 @@ when in touch with ship lose life or die
 
 
 */
+
 class Planet extends Ball {
+	
 	constructor(pos, vel, radius) {
 		super(pos, vel, radius)
 	}

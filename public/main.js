@@ -22,6 +22,7 @@ const ship_img_names = [
 
 // your dynamic letiables here
 let focus_ship = false
+let gameOverFlag = false
 let ship = null
 let rocket_model_no_fire = null
 let rocket_model_yes_fire = null
@@ -38,6 +39,8 @@ let coin_renderer = null
 
 let planet_images = null
 let coin_images = null
+
+minimal_distance = Math.min(width, height) / 3
 
 function generatePlanet(min_speed, max_speed) {
 	let r = Math.max(width, height) * 0.8
@@ -69,13 +72,9 @@ function generateCoin(){
 	let done = false
 	while (!done) {
 		done = true
-		coin = new Coin(
-			new Vector(width * Math.random(), height * Math.random()))
-		for (let i = 0; i < balls.length; ++i) {
-			if (Ball.areColliding(coin, balls[i])) {
-				done = false
-				break
-			}
+		coin = new Coin()
+		if(coin.pos.distFromPos(ship.pos) < minimal_distance){
+			done = false
 		}
 	}
 	coin_renderer = new CoinRenderer(coin)
@@ -105,8 +104,6 @@ function init() {
 	}
 	generateCoin()
 
-	console.log("finished")
-
 	// balls.push(ship)
 	//p1 = new Planet(...)
 	//p2 = new Planet(...)
@@ -114,14 +111,28 @@ function init() {
 	//coin = new Coin(...)
 }
 
+function gameOver(){
+	gameOverFlag = true
+}
+
+function renderGameOver(){
+	//TODO
+}
+
+function coinCollision(){
+	//TODO
+}
+
 function update() {
-	console.log("finished1")
-	planets = null
-	coin = null
-	ship.update(planets, coin)
+	collisionArray = ship.update(planets, coin)
+	if(collisionArray[0]){
+		gameOver()
+	}
+	else if(collisionArray[1]){
+		coinCollision()
+	}
 	Ball.updateBalls(balls) // .concat([ship])
 	//checkPlanets()
-	console.log("finished2")
 }
 
 function render() {
@@ -130,13 +141,19 @@ function render() {
 	if (focus_ship) {
 		context.translate(width / 2 - ship.pos.x, height / 2 - ship.pos.y)
 		renderShip()
-		renderPlanets()
 		renderCoin()
+		renderPlanets()	
+		if(gameOverFlag){
+			renderGameOver()
+		}	
 		context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 	} else {
 		renderShip()
-		renderPlanets()
 		renderCoin()
+		renderPlanets()
+		if(gameOverFlag){
+			renderGameOver()
+		}
 	}
 }
 

@@ -13,7 +13,7 @@ right: boolean
 class Ship extends Ball {
 
 	static forwardForce = 80
-	static angleChange = (2 * PI) / 150
+	static angleChange = (2 * PI) / 100
 	static angleForce = 10
 
 	static max_dir_vel = 0.07
