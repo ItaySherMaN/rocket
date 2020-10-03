@@ -1,10 +1,8 @@
 /*
 class ship
 
-pos: vector
-vel: vector
+
 dir: double
-mass: int
 forward: boolean
 left: boolean
 right: boolean
@@ -12,7 +10,7 @@ right: boolean
 
 */
 
-class Ship {
+class Ship extends Ball {
 
 	static img_width = 90
 	static img_height = 100
@@ -23,15 +21,15 @@ class Ship {
 
 	static max_dir_vel = 0.07
 
+	static radius = 31
+
 	constructor(x, y) {
-		this.pos = new Vector(x, y)
-		this.vel = new Vector(0, 0)
+		super(new Vector(x, y), new Vector(0, 0), Ship.radius)
 		this.dir = 5
 		this.dir_vel = 0
 		this.forward = false
 		this.left = false
 		this.right = false
-		this.mass = 1
 	}
 
 	// recives force as vector
@@ -151,7 +149,7 @@ class Ship {
 
 	// change position of a ball a fraction of the time
 	// 0 < time left <= 1
-	updatePos(time_left) {
-		this.pos = this.pos.add(this.vel.multiply(time_left))
-	}
+	// updatePos(time_left) {
+	// 	this.pos = this.pos.add(this.vel.multiply(time_left))
+	// }
 }
