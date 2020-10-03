@@ -1,14 +1,13 @@
 /*
-class Planet
+class planet:
 
-pos: vector
-radius: int
-mass: int
-
+extends ball 
+becomes faster as time progresses (optional) 
+when in touch with ship lose life or die
 
 
 */
-class Planet {
+class Planet extends Ball {
 	constructor() {
 		// TODO
 	}
