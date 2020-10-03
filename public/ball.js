@@ -2,6 +2,8 @@
 class ball:
 pos: vector
 vel: velocity vector
+radius: float
+mass: float
 */
 class Ball {
 	static G = 1

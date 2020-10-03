@@ -81,8 +81,6 @@ function setup(images) {
 function init() {
 	ship = new Ship(width / 2 - 300, height / 2 - 300)
 	
-	ship.radius = 31
-	ship.mass = 5000
 	// balls.push(ship)
 	//p1 = new Planet(...)
 	//p2 = new Planet(...)
