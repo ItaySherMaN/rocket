@@ -11,7 +11,7 @@ class Coin {
 
 	static coin_radius = 15
 
-	constructor(pos) {
+	constructor() {
 		let r = Coin.coin_radius
 		this.pos = new Vector((width - r) * Math.random() + r, (height - r) * Math.random() + r)
 	}

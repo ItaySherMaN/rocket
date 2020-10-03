@@ -1,6 +1,6 @@
 
 // your constants here
-coin_img_name = 'coin.jpg'
+coin_img_name = 'coin.png'
 
 const planet_img_names = [
 	"planet_1.png",
@@ -21,6 +21,7 @@ const ship_img_names = [
 ]
 
 // your dynamic letiables here
+let score = 0
 let focus_ship = false
 let gameOverFlag = false
 let ship = null
@@ -120,7 +121,8 @@ function renderGameOver(){
 }
 
 function coinCollision(){
-	//TODO
+	score += 1
+	generateCoin()
 }
 
 function update() {
