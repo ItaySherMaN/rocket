@@ -9,7 +9,7 @@ when in touch with ship lose life or die
 */
 
 class Planet extends Ball {
-	
+
 	constructor(pos, vel, radius) {
 		super(pos, vel, radius)
 	}
@@ -48,8 +48,8 @@ class Planet extends Ball {
 			return true
 		}
 
-		let a1 = c2.subtract(this.pos).getAngle()
-		let a2 = c3.subtract(this.pos).getAngle()
+		a1 = c2.subtract(this.pos).getAngle()
+		a2 = c3.subtract(this.pos).getAngle()
 		if (Math.min(a1, a2) < a < Math.max(a1, a2)) {
 			return true
 		}

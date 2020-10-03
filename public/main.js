@@ -1,6 +1,7 @@
 
 // your constants here
-coin_img_name = 'coin.jpg'
+const coin_img_name = 'coin.png'
+const minimal_distance = Math.min(width, height) / 3
 
 const planet_img_names = [
 	"planet_1.png",
@@ -39,8 +40,6 @@ let coin_renderer = null
 
 let planet_images = null
 let coin_images = null
-
-minimal_distance = Math.min(width, height) / 3
 
 function generatePlanet(min_speed, max_speed) {
 	let r = Math.max(width, height) * 0.8
@@ -142,10 +141,10 @@ function render() {
 		context.translate(width / 2 - ship.pos.x, height / 2 - ship.pos.y)
 		renderShip()
 		renderCoin()
-		renderPlanets()	
+		renderPlanets()
 		if(gameOverFlag){
 			renderGameOver()
-		}	
+		}
 		context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 	} else {
 		renderShip()
