@@ -2,7 +2,7 @@
 // your constants here
 
 // your dynamic letiables here
-let focus_ship = true
+let focus_ship = false
 let ship = null
 let planets = null
 let rocket_model_no_fire = null
