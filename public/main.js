@@ -1,5 +1,7 @@
 
 // your constants here
+coin_img_name = 'coin.jpg'
+
 const planet_img_names = [
 	"planet_1.png",
 	"planet_2.png",
@@ -24,7 +26,7 @@ let ship = null
 let rocket_model_no_fire = null
 let rocket_model_yes_fire = null
 
-let pause = true
+let pause = false
 
 let balls = null
 let planets = null
@@ -35,6 +37,7 @@ let planets_renderer = null
 let coin_renderer = null
 
 let planet_images = null
+let coin_images = null
 
 function generatePlanet(min_speed, max_speed) {
 	let r = Math.max(width, height) * 0.8
@@ -62,10 +65,27 @@ function generatePlanet(min_speed, max_speed) {
 	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
 }
 
+function generateCoin(){
+	let done = false
+	while (!done) {
+		done = true
+		coin = new Coin(
+			new Vector(width * Math.random(), height * Math.random()))
+		for (let i = 0; i < balls.length; ++i) {
+			if (Ball.areColliding(coin, balls[i])) {
+				done = false
+				break
+			}
+		}
+	}
+	coin_renderer = new CoinRenderer(coin)
+}
+
 function setup(images) {
 	rocket_model_no_fire = images[0]
 	rocket_model_yes_fire = images[1]
-	planet_images = images.slice(2, images.length)
+	coin_image = images[2]
+	planet_images = images.slice(3, images.length)
 	console.log(rocket_model_no_fire, rocket_model_yes_fire)
 }
 
@@ -83,6 +103,9 @@ function init() {
 	for (let i = 0; i < 3; ++i) {
 		generatePlanet(3, 10)
 	}
+	generateCoin()
+
+	console.log("finished")
 
 	// balls.push(ship)
 	//p1 = new Planet(...)
@@ -92,11 +115,13 @@ function init() {
 }
 
 function update() {
+	console.log("finished1")
 	planets = null
 	coin = null
 	ship.update(planets, coin)
 	Ball.updateBalls(balls) // .concat([ship])
-	checkPlanets()
+	//checkPlanets()
+	console.log("finished2")
 }
 
 function render() {
@@ -106,12 +131,12 @@ function render() {
 		context.translate(width / 2 - ship.pos.x, height / 2 - ship.pos.y)
 		renderShip()
 		renderPlanets()
-		// renderCoin()
+		renderCoin()
 		context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 	} else {
 		renderShip()
 		renderPlanets()
-		// renderCoin()
+		renderCoin()
 	}
 }
 
@@ -191,7 +216,7 @@ function run() {
 
 console.log(ship_img_names.concat(planet_img_names).map(name => loadImage('assets/' + name)))
 
-Promise.all(ship_img_names.concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
+Promise.all(ship_img_names.concat(coin_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
 	console.log(images)
 	setup(images)
 	init()
