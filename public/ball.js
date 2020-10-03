@@ -43,6 +43,8 @@ class Ball {
 
 	// get a list of balls and update their positions using ellastic collisions
 	static updateBalls(balls) {
+		let ship_collided_planet = false
+
 		let time_left = 1.0
 		while (time_left > 0) {
 			let a = time_left
@@ -71,15 +73,19 @@ class Ball {
 					}
 				}
 			}
-			// console.log(pairs)
+
 			for (let i = 0; i < balls.length; i++) {
 				balls[i].updatePos(a)
 			}
 			time_left -= a
 			for (let pair of pairs) {
+				if (pair[0] === ship || pair[1] === ship) {
+					ship_collided_planet = true
+				}
 				Ball.collide(pair[0], pair[1])
 			}
 		}
+		return ship_collided_planet
 	}
 
 	static areColliding(ball_1, ball_2) {
