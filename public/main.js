@@ -39,6 +39,8 @@ let coin_renderer = null
 let planet_images = null
 let coin_images = null
 
+minimal_distance = Math.min(width, height) / 3
+
 function generatePlanet(min_speed, max_speed) {
 	let r = Math.max(width, height) * 0.8
 	let angle = Math.random() * 2 * PI
@@ -69,13 +71,9 @@ function generateCoin(){
 	let done = false
 	while (!done) {
 		done = true
-		coin = new Coin(
-			new Vector(width * Math.random(), height * Math.random()))
-		for (let i = 0; i < balls.length; ++i) {
-			if (Ball.areColliding(coin, balls[i])) {
-				done = false
-				break
-			}
+		coin = new Coin()
+		if(coin.pos.distFromPos(ship.pos) < minimal_distance){
+			done = false
 		}
 	}
 	coin_renderer = new CoinRenderer(coin)
