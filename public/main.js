@@ -103,8 +103,8 @@ function coinCollision() {
 }
 
 function update() {
-	collisionArray = ship.update(planets, coin)
-	if(collisionArray[0]){
+	let collisionArray = ship.update(planets, coin)
+	if(Ball.updateBalls(balls)){
 		gameOver()
 	}
 	else if(collisionArray[1]){
