@@ -19,6 +19,11 @@ const DOWN		= 40
 const LEFT		= 37
 const RIGHT		= 39
 const SPACE		= 32
+const ord = {}
+
+'1234567890-=QWERTYUIOP[]ASDFGHJKL;ZXCVBNM,./'.split('').forEach(char => {
+	ord[char] = char.charCodeAt(0)
+})
 
 // math constants
 const PI		= Math.PI

@@ -39,13 +39,15 @@ class Ball {
 
 	// get a list of balls and update their positions using ellastic collisions
 	static updateBalls(balls) {
-		let time_left = 1
+		let time_left = 1.0
 		while (time_left > 0) {
 			let a = time_left
 			for (let i = 0; i < balls.length; i++) {
 				for (let j = i + 1; j < balls.length; j++) {
-					let x = right_time(balls[i], balls[j])
-					if (x != NaN) {
+					let b1 = balls[i],
+						b2 = balls[j]
+					let x = Math.min(right_time(b1, b2), right_time(b2, b1))
+					if (x !== NaN) {
 						if (x < a) {
 							a = x
 						}
@@ -57,14 +59,15 @@ class Ball {
 				for (let j = i + 1; j < balls.length; j++) {
 					let b1 = balls[i],
 						b2 = balls[j]
-					let x = right_time(b1, b2)
-					if (x != NaN) {
-						if (x == a) {
+					let x = Math.min(right_time(b1, b2), right_time(b2, b1))
+					if (x !== NaN) {
+						if (x <= a + 5e-13) { // floating point error :(
 							pairs.push([b1, b2])
 						}
 					}
 				}
 			}
+			// console.log(pairs)
 			for (let i = 0; i < balls.length; i++) {
 				balls[i].updatePos(a)
 			}

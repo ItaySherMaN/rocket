@@ -14,8 +14,8 @@ right: boolean
 
 class Ship {
 
-	static img_width = 100
-	static img_height = 60
+	static img_width = 90
+	static img_height = 100
 
 	static forwardForce = 1000
 	static angleChange = (2 * PI) / 100
