@@ -1,86 +1,88 @@
 
 // your constants here
-const planet_img_names = ["planet1.png", "planet2.png"]
+const planet_img_names = [
+	"planet_1.png",
+	"planet_2.png",
+	// "planet_3.png",
+	// "planet_4.png",
+	// "planet_5.png",
+	// "planet_6.png",
+	// "planet_7.png",
+	// "planet_8.png",
+	// "planet_9.png",
+	// "planet_10.png",
+]
+
+const ship_img_names = [
+	"rocket_model_no_fire.png",
+	"rocket_model_yes_fire.png"
+]
 
 // your dynamic letiables here
 let focus_ship = false
 let ship = null
-let planets = null
 let rocket_model_no_fire = null
 let rocket_model_yes_fire = null
 
 let pause = true
 
-// debug
 let balls = null
+let planets = null
+let coin = null
 
-function generate_balls() {
-	balls = []
-	let angle = 0
-	let r = 3 * width
-	let n = 40
-	for (let i = 0; i < n; ++i) {
-		angle = i * 2 * PI / n
-		balls.push(new Ball(
+let ship_renderer = null
+let planets_renderer = null
+let coin_renderer = null
+
+let planet_images = null
+
+function generatePlanet(min_speed, max_speed) {
+	let r = Math.max(width, height) * 0.8
+	let angle = Math.random() * 2 * PI
+	let planet = null
+	let random_angle = 0.3
+	let done = false
+	while (!done) {
+		done = true
+		planet = new Planet(
 			new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
-			Vector.fromAngle(PI + angle, 10 * Math.random() + 5),
-			Math.random() * 60 + 5
-		))
+			Vector.fromAngle(PI + angle + Math.random() * random_angle * 2 - random_angle, Math.random() * (max_speed - min_speed) + min_speed),
+			Math.random() * 40 + 20
+		)
+		for (let i = 0; i < balls.length; ++i) {
+			if (Ball.areColliding(planet, balls[i])) {
+				done = false
+				break
+			}
+		}
 	}
 
-	// r = 50
-	// v = 3
-	// balls = [
-	// 	new Ball(
-	// 		new Vector(width / 2 - 400, height / 2),
-	// 		new Vector(v, 0),
-	// 		r
-	// 	),
-	// 	new Ball(
-	// 		new Vector(width / 2 + 400, height / 2),
-	// 		new Vector(0, 0),
-	// 		r
-	// 	),
-	// 	new Ball(
-	// 		new Vector(width / 2, height / 2 - 400),
-	// 		new Vector(0, v),
-	// 		r
-	// 	),
-	// 	new Ball(
-	// 		new Vector(width / 2, height / 2 + 400),
-	// 		new Vector(0, -v),
-	// 		r
-	// 	)
-	//
-	//
-	// ]
+	planets.push(planet)
+	balls.push(planet)
+	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
 }
 
-function renderBalls() {
-	context.fillStyle = 'red'
-	context.strokeStyle = 'blue'
-	context.lineWidth = 4
-	balls.forEach(ball => {
-		context.beginPath()
-		context.arc(ball.pos.x, ball.pos.y, ball.radius, 0, 2 * PI)
-		context.fill()
-
-		context.beginPath()
-		context.moveTo(ball.pos.x, ball.pos.y)
-		context.lineTo(ball.pos.x + 5 * ball.vel.x, ball.pos.y + 5 * ball.vel.y)
-		context.stroke()
-	})
-}
-// end debug
 function setup(images) {
 	rocket_model_no_fire = images[0]
 	rocket_model_yes_fire = images[1]
-
-	generate_balls()
+	planet_images = images.slice(2, images.length)
+	console.log(rocket_model_no_fire, rocket_model_yes_fire)
 }
 
 function init() {
+	pause = true
+
+	balls = []
 	ship = new Ship(width / 2 - 300, height / 2 - 300)
+	balls.push(ship)
+	ship_renderer = new ShipRenderer(ship)
+
+	planets = []
+	planets_renderer = []
+
+	for (let i = 0; i < 3; ++i) {
+		generatePlanet(3, 10)
+	}
 
 	// balls.push(ship)
 	//p1 = new Planet(...)
@@ -93,19 +95,23 @@ function update() {
 	planets = null
 	coin = null
 	ship.update(planets, coin)
-	Ball.updateBalls(balls.concat([ship])) // .concat([ship])
+	Ball.updateBalls(balls) // .concat([ship])
+	checkPlanets()
 }
 
 function render() {
 	renderBackground()
+
 	if (focus_ship) {
 		context.translate(width / 2 - ship.pos.x, height / 2 - ship.pos.y)
 		renderShip()
-		renderBalls()
+		renderPlanets()
+		// renderCoin()
 		context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 	} else {
 		renderShip()
-		renderBalls()
+		renderPlanets()
+		// renderCoin()
 	}
 }
 
@@ -115,20 +121,17 @@ function renderBackground() {
 }
 
 function renderShip() {
-	const x = ship.pos.x
-	const y = ship.pos.y
-	const w = Ship.img_width
-	const h = Ship.img_height
-	const angle = ship.dir
-	context.translate(x, y);
-	context.rotate(angle);
-	if (!ship.forward) {
-		context.drawImage(rocket_model_no_fire, -w / 2, -h / 2, w, h);
-	} else {
-		context.drawImage(rocket_model_yes_fire, -w * 0.95 , -h / 2, w * 1.4, h * 0.95);
-	}
-	context.rotate(-angle);
-	context.translate(-x, -y);
+	ship_renderer.render()
+}
+
+function renderPlanets() {
+	planets_renderer.forEach(planet_renderer => {
+		planet_renderer.render()
+	})
+}
+
+function renderCoin() {
+	coin_renderer.render()
 }
 
 document.body.addEventListener("keydown", function(event) {
@@ -186,7 +189,10 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-Promise.all([loadImage('rocket_model_no_fire.png'), loadImage('rocket_model_yes_fire.png')]).then(images => {
+console.log(ship_img_names.concat(planet_img_names).map(name => loadImage('assets/' + name)))
+
+Promise.all(ship_img_names.concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
+	console.log(images)
 	setup(images)
 	init()
 	run()

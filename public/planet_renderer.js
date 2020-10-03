@@ -9,7 +9,13 @@ class PlanetRenderer {
 	}
 
 	render() {
-		const two_r = this.planet.radius * 2
-		context.drawImage(planet_images[img_index], this.planet.pos.x, this.planet.pos.y, two_r, two_r)
+		const r = this.planet.radius
+		const img = planet_images[this.img_index]
+		context.drawImage(img, this.planet.pos.x - r, this.planet.pos.y - r, r + r, r + r)
+
+		// context.fillStyle = 'red'
+		// context.beginPath()
+		// context.arc(this.planet.pos.x, this.planet.pos.y, this.planet.radius, 0, 2 * PI)
+		// context.fill()
 	}
 }

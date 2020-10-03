@@ -82,6 +82,10 @@ class Ball {
 		}
 	}
 
+	static areColliding(ball_1, ball_2) {
+		return ball_1.pos.distFromPos(ball_2.pos) <= ball_1.radius + ball_2.radius
+	}
+
 	// change only the velocities of ball_1 and ball_2 to make an ellastic collision
 	static collide(ball_1, ball_2) {
 		const m1 = ball_1.mass

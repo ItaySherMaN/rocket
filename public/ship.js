@@ -12,11 +12,8 @@ right: boolean
 
 class Ship extends Ball {
 
-	static img_width = 90
-	static img_height = 100
-
-	static forwardForce = 1000
-	static angleChange = (2 * PI) / 100
+	static forwardForce = 80
+	static angleChange = (2 * PI) / 150
 	static angleForce = 10
 
 	static max_dir_vel = 0.07
@@ -25,7 +22,7 @@ class Ship extends Ball {
 
 	constructor(x, y) {
 		super(new Vector(x, y), new Vector(0, 0), Ship.radius)
-		this.dir = 5
+		this.dir = 0
 		this.dir_vel = 0
 		this.forward = false
 		this.left = false
