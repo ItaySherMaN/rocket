@@ -109,7 +109,7 @@ class Ship {
 		}
 		this.correctAngle(this.dir)
 		this.activateForce(allForces)
-		this.pos = this.pos.add(this.vel)
+		// this.pos = this.pos.add(this.vel)
 		return collisionArray
 	}
 

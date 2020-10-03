@@ -2,10 +2,11 @@
 // your constants here
 
 // your dynamic letiables here
-let focus_ship = false
+let focus_ship = true
 let ship = null
 let planets = null
 let rocket_model_no_fire = null
+let rocket_model_yes_fire = null
 
 let pause = true
 
@@ -72,6 +73,7 @@ function renderBalls() {
 // end debug
 function setup(images) {
 	rocket_model_no_fire = images[0]
+	rocket_model_yes_fire = images[1]
 
 	generate_balls()
 }
@@ -91,9 +93,9 @@ function init() {
 function update() {
 	planets = null
 	coin = null
-	ship.update2(planets, coin)
-	Ball.updateBalls(balls.concat([ship]))
-}
+	ship.update(planets, coin)
+	Ball.updateBalls(balls.concat([ship])) // .concat([ship])
+} 
 
 function render() {
 	renderBackground()
@@ -121,7 +123,11 @@ function renderShip() {
 	const angle = ship.dir
 	context.translate(x, y);
 	context.rotate(angle);
-	context.drawImage(rocket_model_no_fire, -w / 2, -h / 2, w, h);
+	if (!ship.forward) {
+		context.drawImage(rocket_model_no_fire, -w / 2, -h / 2, w, h);
+	} else {
+		context.drawImage(rocket_model_yes_fire, -w * 0.95 , -h / 2, w * 1.4, h * 0.95);
+	}
 	context.rotate(-angle);
 	context.translate(-x, -y);
 }
@@ -181,7 +187,7 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-Promise.all([loadImage('rocket_model_no_fire.png')]).then(images => {
+Promise.all([loadImage('rocket_model_no_fire.png'), loadImage('rocket_model_yes_fire.png')]).then(images => {
 	setup(images)
 	init()
 	run()
