@@ -52,23 +52,13 @@ class Ship extends Ball {
 		}
 		let powDir = planet.pos.subtract(this.pos)
 		let forceToActivate = (this.mass * planet.mass) / Math.pow(dist, 2)
-		this.forceVector = Vector.fromAngle(powDir.getAngle(), forceToActivate)
-		return this.forceVector
+		let forceVector = Vector.fromAngle(powDir.getAngle(), forceToActivate)
+		return forceVector
 	}
 
 	// if the angle is not in the range of [0, 2 * PI) get it there
 	correctAngle() {
 		this.dir -= 2 * PI * Math.floor(this.dir / (2 * PI))
-		// while (this.dir < 0) {
-		//
-		// }
-		// while (this.dir < 0 || this.dir >= 2 * PI) {
-		//	 if (a < 0) {
-		//		 a += 2 * PI
-		//	 } else {
-		//		 a -= 2 * PI
-		//	 }
-		// }
 	}
 
 	// updates variables
@@ -80,14 +70,14 @@ class Ship extends Ball {
 		let allForces = new Vector(0, 0)
 		if (!(planets == null || coin == null)) {
 			for (let i = 0; i < planets.length; i++) {
-				plPow = this.planetForce(planets[i])
+				let plPow = this.planetForce(planets[i])
 				if (plPow == -1) {
 					collisionArray[0] = true
 					return collisionArray
 				}
 				allForces = allForces.add(plPow)
 			}
-			distFromCoin = this.pos.distFromPos(coin.pos)
+			let distFromCoin = this.pos.distFromPos(coin.pos)
 			if (distFromCoin <= coin.radius) {
 				collisionArray[1] = true
 			}
