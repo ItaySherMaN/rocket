@@ -1,5 +1,6 @@
 
 // your constants here
+const planet_img_names = ["planet1.png", "planet2.png"]
 
 // your dynamic letiables here
 let focus_ship = false
@@ -14,45 +15,45 @@ let pause = true
 let balls = null
 
 function generate_balls() {
-	// balls = []
-	// let angle = 0
-	// let r = 3 * width
-	// let n = 40
-	// for (let i = 0; i < n; ++i) {
-	// 	angle = i * 2 * PI / n
-	// 	balls.push(new Ball(
-	// 		new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
-	// 		Vector.fromAngle(PI + angle, 10 * Math.random() + 5),
-	// 		Math.random() * 60 + 5
-	// 	))
-	// }
+	balls = []
+	let angle = 0
+	let r = 3 * width
+	let n = 40
+	for (let i = 0; i < n; ++i) {
+		angle = i * 2 * PI / n
+		balls.push(new Ball(
+			new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
+			Vector.fromAngle(PI + angle, 10 * Math.random() + 5),
+			Math.random() * 60 + 5
+		))
+	}
 
-	r = 50
-	v = 3
-	balls = [
-		new Ball(
-			new Vector(width / 2 - 400, height / 2),
-			new Vector(v, 0),
-			r
-		),
-		new Ball(
-			new Vector(width / 2 + 400, height / 2),
-			new Vector(0, 0),
-			r
-		),
-		new Ball(
-			new Vector(width / 2, height / 2 - 400),
-			new Vector(0, v),
-			r
-		),
-		new Ball(
-			new Vector(width / 2, height / 2 + 400),
-			new Vector(0, -v),
-			r
-		)
-
-
-	]
+	// r = 50
+	// v = 3
+	// balls = [
+	// 	new Ball(
+	// 		new Vector(width / 2 - 400, height / 2),
+	// 		new Vector(v, 0),
+	// 		r
+	// 	),
+	// 	new Ball(
+	// 		new Vector(width / 2 + 400, height / 2),
+	// 		new Vector(0, 0),
+	// 		r
+	// 	),
+	// 	new Ball(
+	// 		new Vector(width / 2, height / 2 - 400),
+	// 		new Vector(0, v),
+	// 		r
+	// 	),
+	// 	new Ball(
+	// 		new Vector(width / 2, height / 2 + 400),
+	// 		new Vector(0, -v),
+	// 		r
+	// 	)
+	//
+	//
+	// ]
 }
 
 function renderBalls() {
@@ -80,7 +81,7 @@ function setup(images) {
 
 function init() {
 	ship = new Ship(width / 2 - 300, height / 2 - 300)
-	
+
 	// balls.push(ship)
 	//p1 = new Planet(...)
 	//p2 = new Planet(...)
@@ -93,7 +94,7 @@ function update() {
 	coin = null
 	ship.update(planets, coin)
 	Ball.updateBalls(balls.concat([ship])) // .concat([ship])
-} 
+}
 
 function render() {
 	renderBackground()
