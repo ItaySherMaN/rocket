@@ -4,8 +4,8 @@ const coin_img_name = 'coin.png'
 const gameOver_img_name = 'game_over.png'
 const newGame_img_name = 'new_game.png'
 const minimal_distance = Math.min(width, height) / 3
-const planet_min_speed = 3
-const planet_max_speed = 10
+const planet_min_speed = 1
+const planet_max_speed = 2
 
 const planet_img_names = [
 	"planet_1.png",
