@@ -43,12 +43,12 @@ let coin_images = null
 
 function generatePlanet(min_speed, max_speed) {
 	let r = Math.max(width, height) * 0.8
-	let angle = Math.random() * 2 * PI
 	let planet = null
 	let random_angle = 0.3
 	let done = false
 	while (!done) {
 		done = true
+		let angle = Math.random() * 2 * PI
 		planet = new Planet(
 			new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
 			Vector.fromAngle(PI + angle + Math.random() * random_angle * 2 - random_angle, Math.random() * (max_speed - min_speed) + min_speed),
@@ -69,10 +69,11 @@ function generatePlanet(min_speed, max_speed) {
 
 function generateCoin(){
 	let done = false
+	let r = Coin.coin_radius
 	while (!done) {
 		done = true
-		coin = new Coin()
-		if(coin.pos.distFromPos(ship.pos) < minimal_distance){
+		coin = new Coin(new Vector((width - r - r) * Math.random() + r, (height - r - r) * Math.random() + r))
+		if (coin.pos.distFromPos(ship.pos) < minimal_distance) {
 			done = false
 		}
 	}
@@ -84,7 +85,6 @@ function setup(images) {
 	rocket_model_yes_fire = images[1]
 	coin_image = images[2]
 	planet_images = images.slice(3, images.length)
-	console.log(rocket_model_no_fire, rocket_model_yes_fire)
 }
 
 function init() {
@@ -110,15 +110,15 @@ function init() {
 	//coin = new Coin(...)
 }
 
-function gameOver(){
+function gameOver() {
 	gameOverFlag = true
 }
 
-function renderGameOver(){
+function renderGameOver() {
 	//TODO
 }
 
-function coinCollision(){
+function coinCollision() {
 	//TODO
 }
 
@@ -230,10 +230,7 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-console.log(ship_img_names.concat(planet_img_names).map(name => loadImage('assets/' + name)))
-
 Promise.all(ship_img_names.concat(coin_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
-	console.log(images)
 	setup(images)
 	init()
 	run()

@@ -1,5 +1,5 @@
-/* 
-class coin: 
+/*
+class coin:
 
 only one coin at a time
 spawns at a random location and stays there
@@ -13,6 +13,6 @@ class Coin {
 
 	constructor(pos) {
 		let r = Coin.coin_radius
-		this.pos = new Vector((width - r) * Math.random() + r, (height - r) * Math.random() + r)
+		this.pos = pos
 	}
 }
