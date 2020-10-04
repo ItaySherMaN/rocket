@@ -1,3 +1,17 @@
+const planets_at_once = 3
+
+const pause_color = 'rgba(150, 150, 150, 0.5)'
+
+const score_font = '64px monospace'
+const score_color = 'rgb(255, 130, 171)'
+
+const game_over_font = '64px Tahoma'
+const game_over_color = 'rgb(119, 255, 102)'
+
+const coin_indicator_text_font = '24px Tahoma'
+const coin_indicator_text_stroke = 'black'
+const coin_indicator_color = 'rgb(255, 252, 0, 0.7)'
+
 let score = 0
 let focus_ship = true
 let gameOverFlag = false
@@ -26,7 +40,7 @@ class GameStage {
 		planets = []
 		planets_renderer = []
 
-		for (let i = 0; i < 3; ++i) {
+		for (let i = 0; i < planets_at_once; ++i) {
 			generatePlanet(Planet.min_speed, Planet.max_speed)
 		}
 		generateCoin()
@@ -54,18 +68,23 @@ class GameStage {
 			renderShip()
 			renderCoin()
 			renderPlanets()
+			// renderCoinArrow()
 			context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 		} else {
 			renderShip()
 			renderCoin()
 			renderPlanets()
+			// renderCoinArrow()
 		}
 		if (gameOverFlag) {
 			renderGameOver()
 		}
+		renderCoinArrow()
 		renderScore()
 
-
+		if (pause) {
+			renderPause()
+		}
 	}
 
 	keyDown(event) {
@@ -143,7 +162,6 @@ function generatePlanet() {
 function checkPlanets() {
 	for (let i = 0; i < planets.length; ++i) {
 		if (planets[i].isAway()) {
-			console.log('away!')
 			balls.splice(balls.indexOf(planets[i]), 1)
 			planets.splice(i, 1)
 			planets_renderer.splice(i, 1)
@@ -189,18 +207,18 @@ function coinCollision() {
 }
 
 function renderScore() {
-	context.font = '64px Arial'
-	context.fillStyle = 'green'
-	context.fillText(score, 10, 60)
+	context.font = score_font
+	context.fillStyle = score_color
+	context.fillText(score, 70, 100)
 }
 
 function renderGameOver() {
-	context.fillStyle = 'black'
-	context.strokeStyle = 'green'
+	context.fillStyle = game_over_color
+
 	context.lineWidth = 3
-	context.font = '64px Tahoma'
+	context.font = game_over_font
 	context.fillText("Game over", width / 2 - 150, height / 2 - 200)
-	context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
+	// context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
 	// context.drawImage(game_over_img, 0, 0, width, height / 2)
 	// context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
 }
@@ -219,6 +237,7 @@ function renderPlanets() {
 		planet_renderer.render()
 	})
 
+	// TEMP!
 	context.lineWidth = 2
 	context.strokeStyle = 'black'
 	planets.forEach(planet => {
@@ -227,8 +246,60 @@ function renderPlanets() {
 		context.lineTo(ship.planetForce(planet).x + ship.pos.x, ship.planetForce(planet).y + ship.pos.y)
 		context.stroke()
 	})
+	// END TEMP
 }
 
 function renderCoin() {
 	coin_renderer.render()
+}
+
+function renderCoinArrow() {
+	if (coin.outsideScreen()) {
+		const ship_to_coin = coin.pos.subtract(ship.pos)
+		const c1 = new Vector(-width / 2, -height / 2)
+		const c2 = new Vector(width / 2, -height / 2)
+		const c3 = new Vector(-width / 2, height / 2)
+		const c4 = new Vector(width / 2, height / 2)
+
+		const x1 = width / 2
+		const y1 = height / 2
+		const x2 = x1 + ship_to_coin.x
+		const y2 = y1 + ship_to_coin.y
+
+		let x = 0
+		let y = y2 - x2 * (y2 - y1) / (x2 - x1)
+
+		if (ship_to_coin.isBetween(c1, c2)) {
+			x = x2 - y2 * (x2 - x1) / (y2 - y1)
+			y = 0
+		} else if (ship_to_coin.isBetween(c2, c4)) {
+			x = width
+			y = y2 - (x2 - x) * (y2 - y1) / (x2 - x1)
+		} else if (ship_to_coin.isBetween(c3, c4)) {
+			x = x2 - (y2 - height) * (x2 - x1) / (y2 - y1)
+			y = height
+		}
+
+		context.fillStyle = coin_indicator_color
+		context.beginPath()
+		context.arc(x, y, coin.radius, 0, PI + PI)
+		context.fill()
+
+		x = Math.min(Math.max(x, 10), width - 100)
+		y = Math.min(Math.max(y, 40), height - 20)
+
+		context.strokeStyle = coin_indicator_text_stroke
+		context.font = coin_indicator_text_font
+		context.fillText(parseInt(ship.pos.distFromPos(coin.pos)), x, y)
+	}
+}
+
+function renderPause() {
+	const pw = 200
+	const ph = 200
+	const r = 1 / 3
+
+	context.fillStyle = pause_color
+	context.fillRect(width / 2 - pw / 2, height / 2 - ph / 2, pw * r, ph)
+	context.fillRect(width / 2 - pw / 2 + 2 * pw * r, height / 2 - ph / 2, pw * r, ph)
 }

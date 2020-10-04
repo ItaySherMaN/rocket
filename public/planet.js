@@ -13,8 +13,10 @@ class Planet extends Ball {
 	static min_speed = 3
 	static max_speed = 10
 
-	static min_radius = 20
-	static max_radius = 60
+	static min_radius = 30
+	static max_radius = 70
+
+	// static max_momentum = 500
 
 	constructor(pos, vel, radius) {
 		super(pos, vel, radius)
@@ -39,25 +41,31 @@ class Planet extends Ball {
 				  c3 = new Vector(left_x, bottom_y).subtract(this.pos),
 				  c4 = new Vector(right_x, bottom_y).subtract(this.pos)
 			const c = this.vel
-  			let a = c1
-  			let b = c4
+  			// let a = c1
+  			// let b = c4
+			//
+  			// let ab = a.y * b.x - a.x * b.y
+  			// let cb = c.y * b.x - c.x * b.y
+  			// let ac = a.y * c.x - a.x * c.y
 
-  			let ab = a.y * b.x - a.x * b.y
-  			let cb = c.y * b.x - c.x * b.y
-  			let ac = a.y * c.x - a.x * c.y
-
-			if ((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)) {
+			if (c.isBetween(c1, c4)) {
 				return false
 			}
 
-			a = c2
-			b = c3
+			// if ((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)) {
+			// 	return false
+			// }
 
-			ab = a.y * b.x - a.x * b.y
-			cb = c.y * b.x - c.x * b.y
-			ac = a.y * c.x - a.x * c.y
+			return !(c.isBetween(c2, c3))
 
-			return !((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0))
+			// a = c2
+			// b = c3
+			//
+			// ab = a.y * b.x - a.x * b.y
+			// cb = c.y * b.x - c.x * b.y
+			// ac = a.y * c.x - a.x * c.y
+			//
+			// return !((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0))
 		}
 
 		return false

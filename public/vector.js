@@ -88,4 +88,15 @@ class Vector {
 		return Math.sqrt(dx * dx + dy * dy)
 	}
 
+	// checks if the vector is between two vectors a and b
+	// (if its in the smaller angle between them)
+	isBetween(a, b) {
+		const c = this
+
+		let ab = a.y * b.x - a.x * b.y
+		let cb = c.y * b.x - c.x * b.y
+		let ac = a.y * c.x - a.x * c.y
+
+		return (ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)
+	}
 }

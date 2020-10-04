@@ -16,4 +16,12 @@ class Coin {
 		this.radius = Coin.coin_radius
 		this.pos = pos
 	}
+
+	outsideScreen() {
+		return (this.pos.x < ship.pos.x - width / 2 - this.radius)
+			|| (this.pos.x >= ship.pos.x + width / 2 + this.radius)
+			|| (this.pos.y < ship.pos.y - height / 2 - this.radius)
+			|| (this.pos.y >= ship.pos.y + height / 2 + this.radius)
+
+	}
 }
