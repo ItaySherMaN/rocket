@@ -10,6 +10,12 @@ when in touch with ship lose life or die
 
 class Planet extends Ball {
 
+	static min_speed = 3
+	static max_speed = 10
+
+	static min_radius = 20
+	static max_radius = 60
+
 	constructor(pos, vel, radius) {
 		super(pos, vel, radius)
 	}

@@ -12,7 +12,7 @@ right: boolean
 
 class Ship extends Ball {
 
-	static forwardForce = 80
+	static forwardForce = 80 * Ball.G
 	static angleChange = (2 * PI) / 100
 	static angleForce = 10
 
@@ -24,6 +24,7 @@ class Ship extends Ball {
 		super(new Vector(x, y), new Vector(0, 0), Ship.radius)
 		this.dir = 0
 		this.dir_vel = 0
+
 		this.forward = false
 		this.left = false
 		this.right = false
@@ -45,15 +46,12 @@ class Ship extends Ball {
 
 	// calculate force activated on me from planet
 	planetForce(planet) {
-		let dist = this.pos.distFromPos(planet.pos)
-		if (dist <= planet.radius) {
-			// collision!
-			return -1
-		}
-		let powDir = planet.pos.subtract(this.pos)
-		let forceToActivate = (this.mass * planet.mass) / Math.pow(dist, 2)
-		let forceVector = Vector.fromAngle(powDir.getAngle(), forceToActivate)
-		return forceVector
+		const dx = this.pos.x - planet.pos.x
+		const dy = this.pos.y - planet.pos.y
+		return Vector.fromAngle(
+			planet.pos.subtract(this.pos).getAngle(),
+			(this.mass * planet.mass) / (dx * dx + dy * dy)
+		)
 	}
 
 	// if the angle is not in the range of [0, 2 * PI) get it there
@@ -66,36 +64,33 @@ class Ship extends Ball {
 	* returns boolean array: [planetCollision, coinCollision]
 	*/
 	update(planets, coin) {
-		let collisionArray = [false, false]
+		let collided_coin = false
 		let allForces = new Vector(0, 0)
-		if (!(planets == null || coin == null)) {
-			for (let i = 0; i < planets.length; i++) {
-				let plPow = this.planetForce(planets[i])
-				if (plPow == -1) {
-					collisionArray[0] = true
-					return collisionArray
-				}
-				allForces = allForces.add(plPow)
-			}
-			let distFromCoin = this.pos.distFromPos(coin.pos)
-			if (distFromCoin <= Coin.coin_radius + ship.radius) {
-				collisionArray[1] = true
-			}
+
+		for (let i = 0; i < planets.length; i++) {
+			allForces = allForces.add(this.planetForce(planets[i]))
 		}
+
+		let distFromCoin = this.pos.distFromPos(coin.pos)
+		if (distFromCoin <= coin.radius + ship.radius) {
+			collided_coin = true
+		}
+
 		if (this.forward) {
-			let forceVector = Vector.fromAngle(this.dir, Ship.forwardForce)
-			allForces = allForces.add(forceVector)
+			allForces = allForces.add(Vector.fromAngle(this.dir, Ship.forwardForce))
 		}
+
 		if (this.left) {
 			this.dir -= Ship.angleChange
 		}
 		if (this.right) {
 			this.dir += Ship.angleChange
 		}
+
 		this.correctAngle(this.dir)
 		this.activateForce(allForces)
 		// this.pos = this.pos.add(this.vel)
-		return collisionArray
+		return collided_coin
 	}
 
 	update2(planets, coin) {

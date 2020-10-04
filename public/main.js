@@ -1,21 +1,21 @@
 
 // your constants here
-const coin_img_name = 'coin.png'
+const coin_img_name = 'coin_2.png'
+const gameOver_img_name = 'game_over.png'
+const newGame_img_name = 'new_game.png'
 const minimal_distance = Math.min(width, height) / 3
-const planet_min_speed = 3
-const planet_max_speed = 10
+
+
 
 const planet_img_names = [
 	"planet_1.png",
 	"planet_2.png",
-	// "planet_3.png",
-	// "planet_4.png",
-	// "planet_5.png",
-	// "planet_6.png",
-	// "planet_7.png",
-	// "planet_8.png",
-	// "planet_9.png",
-	// "planet_10.png",
+	"planet_3.png",
+	"planet_4.png",
+	"planet_5.png",
+	"planet_6.png",
+	"planet_7.png",
+	"planet_8.png"
 ]
 
 const ship_img_names = [
@@ -28,6 +28,8 @@ let score = 0
 let focus_ship = false
 let gameOverFlag = false
 let ship = null
+
+let game_over_img = null
 let rocket_model_no_fire = null
 let rocket_model_yes_fire = null
 
@@ -54,6 +56,13 @@ function generateCoin(){
 		coin = new Coin(new Vector((width - r - r) * Math.random() + r, (height - r - r) * Math.random() + r))
 		if (coin.pos.distFromPos(ship.pos) < minimal_distance) {
 			done = false
+		} else {
+			for (let i = 0; i < balls.length; ++i) {
+				if (Ball.areColliding(coin, balls[i])) {
+					done = false
+					break
+				}
+			}
 		}
 	}
 	coin_renderer = new CoinRenderer(coin)
@@ -63,14 +72,16 @@ function setup(images) {
 	rocket_model_no_fire = images[0]
 	rocket_model_yes_fire = images[1]
 	coin_image = images[2]
-	planet_images = images.slice(3, images.length)
+	game_over_img = images[3]
+	new_game_img = images[4]
+	planet_images = images.slice(5, images.length)
 }
 
 function init() {
 	pause = true
 
 	balls = []
-	ship = new Ship(width / 2 - 300, height / 2 - 300)
+	ship = new Ship(width / 2, height / 2)
 	balls.push(ship)
 	ship_renderer = new ShipRenderer(ship)
 
@@ -78,23 +89,13 @@ function init() {
 	planets_renderer = []
 
 	for (let i = 0; i < 3; ++i) {
-		generatePlanet(planet_min_speed, planet_max_speed)
+		generatePlanet(Planet.min_speed, Planet.max_speed)
 	}
 	generateCoin()
-
-	// balls.push(ship)
-	//p1 = new Planet(...)
-	//p2 = new Planet(...)
-	//planets = [p1, p2]
-	//coin = new Coin(...)
 }
 
 function gameOver() {
 	gameOverFlag = true
-}
-
-function renderGameOver() {
-	//TODO
 }
 
 function coinCollision() {
@@ -103,19 +104,18 @@ function coinCollision() {
 }
 
 function update() {
-	let collisionArray = ship.update(planets, coin)
-	if(Ball.updateBalls(balls)){
+	let collided_coin = ship.update(planets, coin)
+	if (Ball.updateBalls(balls)) {
 		gameOver()
 	}
-	else if(collisionArray[1]){
+
+	if (collided_coin) {
 		coinCollision()
 	}
-	Ball.updateBalls(balls)
 	checkPlanets()
-	console.log(planets_renderer.length, planets.length)
 }
 
-function generatePlanet(min_speed, max_speed) {
+function generatePlanet() {
 	let r = Math.max(width, height) * 0.8
 	let planet = null
 	let random_angle = 0.3
@@ -124,9 +124,15 @@ function generatePlanet(min_speed, max_speed) {
 		done = true
 		let angle = Math.random() * 2 * PI
 		planet = new Planet(
-			new Vector(width / 2 + r * Math.cos(angle), height / 2 + r * Math.sin(angle)),
-			Vector.fromAngle(PI + angle + Math.random() * random_angle * 2 - random_angle, Math.random() * (max_speed - min_speed) + min_speed),
-			Math.random() * 40 + 20
+			new Vector(
+				width / 2 + r * Math.cos(angle),
+				height / 2 + r * Math.sin(angle)
+			),
+			Vector.fromAngle(
+				PI + angle + Math.random() * random_angle * 2 - random_angle,
+				Math.random() * (Planet.max_speed - Planet.min_speed) + Planet.min_speed
+			),
+			Math.random() * (Planet.max_radius - Planet.min_radius) + Planet.min_radius
 		)
 		for (let i = 0; i < balls.length; ++i) {
 			if (Ball.areColliding(planet, balls[i])) {
@@ -141,12 +147,14 @@ function generatePlanet(min_speed, max_speed) {
 	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
 }
 
+
 function checkPlanets() {
 	for (let i = 0; i < planets.length; ++i) {
 		if (planets[i].isAway()) {
+			balls.splice(balls.indexOf(planets[i]), 1)
 			planets.splice(i, 1)
 			planets_renderer.splice(i, 1)
-			generatePlanet(planet_min_speed, planet_max_speed)
+			generatePlanet(Planet.min_speed, Planet.max_speed)
 		}
 	}
 }
@@ -165,10 +173,29 @@ function render() {
 		renderCoin()
 		renderPlanets()
 	}
-
 	if (gameOverFlag) {
 		renderGameOver()
 	}
+	renderScore()
+
+	context.lineWidth = 2
+	planets.forEach(planet => {
+		context.beginPath()
+		context.moveTo(ship.pos.x, ship.pos.y)
+		context.lineTo(ship.planetForce(planet).x + ship.pos.x, ship.planetForce(planet).y + ship.pos.y)
+		context.stroke()
+	})
+}
+
+function renderScore() {
+	context.font = '64px Arial'
+	context.fillStyle = 'green'
+	context.fillText(score, 10, 60)
+}
+
+function renderGameOver() {
+	context.drawImage(game_over_img, 0, 0, width, height / 2)
+	context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
 }
 
 function renderBackground() {
@@ -245,7 +272,14 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-Promise.all(ship_img_names.concat(coin_img_name).concat(planet_img_names).map(name => loadImage('assets/' + name))).then(images => {
+Promise.all(
+	ship_img_names
+	.concat(coin_img_name)
+	.concat(gameOver_img_name)
+	.concat(newGame_img_name)
+	.concat(planet_img_names)
+	.map(name => loadImage('assets/' + name))
+).then(images => {
 	setup(images)
 	init()
 	run()

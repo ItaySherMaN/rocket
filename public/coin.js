@@ -12,7 +12,7 @@ class Coin {
 	static coin_radius = 15
 
 	constructor(pos) {
-		let r = Coin.coin_radius
+		this.radius = Coin.coin_radius
 		this.pos = pos
 	}
 }

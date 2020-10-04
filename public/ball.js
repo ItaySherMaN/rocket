@@ -8,7 +8,7 @@ mass: float
 
 */
 class Ball {
-	static G = 1
+	static G = 0.4
 
 	constructor(pos, vel, radius) {
 		this.pos = pos
@@ -68,6 +68,9 @@ class Ball {
 					let x = Math.min(right_time(b1, b2), right_time(b2, b1))
 					if (x !== NaN) {
 						if (x <= a + 5e-13) { // floating point error :(
+							if (b1 === ship || b2 === ship) {
+								ship_collided_planet = true
+							}
 							pairs.push([b1, b2])
 						}
 					}
@@ -79,9 +82,6 @@ class Ball {
 			}
 			time_left -= a
 			for (let pair of pairs) {
-				if (pair[0] === ship || pair[1] === ship) {
-					ship_collided_planet = true
-				}
 				Ball.collide(pair[0], pair[1])
 			}
 		}
@@ -105,7 +105,7 @@ class Ball {
 		const v1_p = ball_1.vel.subtract(v1)
 		v2 = p.multiply(p.dot(v2) / pos_diff_sq)
 		const v2_p = ball_2.vel.subtract(v2)
-		const u1 = v1.multiply(((m1 - m2) / sm)).add(v2.multiply((m2 + m2) / sm))
+		const u1 = v1.multiply((m1 - m2) / sm).add(v2.multiply((m2 + m2) / sm))
 		const u2 = v1.multiply((m1 + m1) / sm).add(v2.multiply((m2 - m1) / sm))
 		ball_1.vel = u1.add(v1_p)
 		ball_2.vel = u2.add(v2_p)
