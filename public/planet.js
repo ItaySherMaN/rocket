@@ -21,49 +21,51 @@ class Planet extends Ball {
 	}
 
 	isAway() {
-		const x = this.pos.x
-		const y = this.pos.y
-		if (x < -this.radius) {
-			return !this.headedToScreen()
+		const left_x = ship.pos.x - width / 2
+		const right_x = ship.pos.x + width / 2
+		const top_y = ship.pos.y - height / 2
+		const bottom_y = ship.pos.y + height / 2
+
+		const x = this.pos.x - left_x
+		const y = this.pos.y - top_y
+		if (
+			(x < -this.radius) ||
+			(x >= width + this.radius) ||
+			(y < -this.radius) ||
+			(y >= height + this.radius)
+		) {
+			const c1 = new Vector(left_x, top_y).subtract(this.pos),
+				  c2 = new Vector(right_x, top_y).subtract(this.pos),
+				  c3 = new Vector(left_x, bottom_y).subtract(this.pos),
+				  c4 = new Vector(right_x, bottom_y).subtract(this.pos)
+			const c = this.vel
+  			let a = c1
+  			let b = c4
+
+  			let ab = a.y * b.x - a.x * b.y
+  			let cb = c.y * b.x - c.x * b.y
+  			let ac = a.y * c.x - a.x * c.y
+
+			if ((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)) {
+				return false
+			}
+
+			a = c2
+			b = c3
+
+			ab = a.y * b.x - a.x * b.y
+			cb = c.y * b.x - c.x * b.y
+			ac = a.y * c.x - a.x * c.y
+
+			return !((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0))
 		}
-		if (x >= width + this.radius) {
-			return !this.headedToScreen()
-		}
-		if (y < -this.radius) {
-			return !this.headedToScreen()
-		}
-		if (y >= height + this.radius) {
-			return !this.headedToScreen()
-		}
+
 		return false
 	}
 
 	headedToScreen() {
-		const c1 = new Vector(0, 0).subtract(this.pos),
-			  c2 = new Vector(width, 0).subtract(this.pos),
-			  c3 = new Vector(0, height).subtract(this.pos),
-			  c4 = new Vector(width, height).subtract(this.pos)
 
-		const c = this.vel
-		let a = c1
-		let b = c4
 
-		let ab = a.y * b.x - a.x * b.y
-		let cb = c.y * b.x - c.x * b.y
-		let ac = a.y * c.x - a.x * c.y
-
-		if ((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)) {
-			return true
-		}
-
-		a = c2
-		b = c3
-
-		ab = a.y * b.x - a.x * b.y
-		cb = c.y * b.x - c.x * b.y
-		ac = a.y * c.x - a.x * c.y
-
-		return (ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)
 	}
 
 

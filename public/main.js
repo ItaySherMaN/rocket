@@ -3,9 +3,6 @@
 const coin_img_name = 'coin_2.png'
 const gameOver_img_name = 'game_over.png'
 const newGame_img_name = 'new_game.png'
-const minimal_distance = Math.min(width, height) / 3
-
-
 
 const planet_img_names = [
 	"planet_1.png",
@@ -24,49 +21,17 @@ const ship_img_names = [
 ]
 
 // your dynamic letiables here
-let score = 0
-let focus_ship = false
-let gameOverFlag = false
-let ship = null
+
 
 let game_over_img = null
 let rocket_model_no_fire = null
 let rocket_model_yes_fire = null
-
-let pause = false
-
-let balls = null
-let planets = null
-let coin = null
-
-let ship_renderer = null
-let planets_renderer = null
-let coin_renderer = null
-
 let planet_images = null
 let coin_images = null
 
-
-
-function generateCoin(){
-	let done = false
-	let r = Coin.coin_radius
-	while (!done) {
-		done = true
-		coin = new Coin(new Vector((width - r - r) * Math.random() + r, (height - r - r) * Math.random() + r))
-		if (coin.pos.distFromPos(ship.pos) < minimal_distance) {
-			done = false
-		} else {
-			for (let i = 0; i < balls.length; ++i) {
-				if (Ball.areColliding(coin, balls[i])) {
-					done = false
-					break
-				}
-			}
-		}
-	}
-	coin_renderer = new CoinRenderer(coin)
-}
+let current_stage = null
+let game_stage = null
+let menu_stage = null
 
 function setup(images) {
 	rocket_model_no_fire = images[0]
@@ -75,177 +40,24 @@ function setup(images) {
 	game_over_img = images[3]
 	new_game_img = images[4]
 	planet_images = images.slice(5, images.length)
+
+	game_stage = new GameStage()
+	menu_stage = new MenuStage()
+	current_stage = game_stage
 }
 
 function init() {
-	pause = true
-
-	balls = []
-	ship = new Ship(width / 2, height / 2)
-	balls.push(ship)
-	ship_renderer = new ShipRenderer(ship)
-
-	planets = []
-	planets_renderer = []
-
-	for (let i = 0; i < 3; ++i) {
-		generatePlanet(Planet.min_speed, Planet.max_speed)
-	}
-	generateCoin()
+	game_stage.init()
+	menu_stage.init()
 }
 
-function gameOver() {
-	gameOverFlag = true
-}
-
-function coinCollision() {
-	score += 1
-	generateCoin()
-}
-
-function update() {
-	let collided_coin = ship.update(planets, coin)
-	if (Ball.updateBalls(balls)) {
-		gameOver()
-	}
-
-	if (collided_coin) {
-		coinCollision()
-	}
-	checkPlanets()
-}
-
-function generatePlanet() {
-	let r = Math.max(width, height) * 0.8
-	let planet = null
-	let random_angle = 0.3
-	let done = false
-	while (!done) {
-		done = true
-		let angle = Math.random() * 2 * PI
-		planet = new Planet(
-			new Vector(
-				width / 2 + r * Math.cos(angle),
-				height / 2 + r * Math.sin(angle)
-			),
-			Vector.fromAngle(
-				PI + angle + Math.random() * random_angle * 2 - random_angle,
-				Math.random() * (Planet.max_speed - Planet.min_speed) + Planet.min_speed
-			),
-			Math.random() * (Planet.max_radius - Planet.min_radius) + Planet.min_radius
-		)
-		for (let i = 0; i < balls.length; ++i) {
-			if (Ball.areColliding(planet, balls[i])) {
-				done = false
-				break
-			}
-		}
-	}
-
-	planets.push(planet)
-	balls.push(planet)
-	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
-}
-
-
-function checkPlanets() {
-	for (let i = 0; i < planets.length; ++i) {
-		if (planets[i].isAway()) {
-			balls.splice(balls.indexOf(planets[i]), 1)
-			planets.splice(i, 1)
-			planets_renderer.splice(i, 1)
-			generatePlanet(Planet.min_speed, Planet.max_speed)
-		}
-	}
-}
-
-function render() {
-	renderBackground()
-
-	if (focus_ship) {
-		context.translate(width / 2 - ship.pos.x, height / 2 - ship.pos.y)
-		renderShip()
-		renderCoin()
-		renderPlanets()
-		context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
-	} else {
-		renderShip()
-		renderCoin()
-		renderPlanets()
-	}
-	if (gameOverFlag) {
-		renderGameOver()
-	}
-	renderScore()
-
-	context.lineWidth = 2
-	planets.forEach(planet => {
-		context.beginPath()
-		context.moveTo(ship.pos.x, ship.pos.y)
-		context.lineTo(ship.planetForce(planet).x + ship.pos.x, ship.planetForce(planet).y + ship.pos.y)
-		context.stroke()
-	})
-}
-
-function renderScore() {
-	context.font = '64px Arial'
-	context.fillStyle = 'green'
-	context.fillText(score, 10, 60)
-}
-
-function renderGameOver() {
-	context.drawImage(game_over_img, 0, 0, width, height / 2)
-	context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
-}
-
-function renderBackground() {
-	context.fillStyle = 'rgb(53, 32, 106)'
-	context.fillRect(0, 0, width, height)
-}
-
-function renderShip() {
-	ship_renderer.render()
-}
-
-function renderPlanets() {
-	planets_renderer.forEach(planet_renderer => {
-		planet_renderer.render()
-	})
-}
-
-function renderCoin() {
-	coin_renderer.render()
-}
 
 document.body.addEventListener("keydown", function(event) {
-	switch (event.keyCode) {
-		case UP:
-			ship.forward = true
-			break
-		case LEFT:
-			ship.left = true
-			break
-		case RIGHT:
-			ship.right = true
-			break
-		case ord['P']:
-			pause = !pause
-			break
-	}
+	current_stage.keyDown(event)
 })
 
 document.body.addEventListener("keyup", function(event) {
-	switch (event.keyCode) {
-		case UP:
-			ship.forward = false
-			break
-		case LEFT:
-			ship.left = false
-			break
-		case RIGHT:
-			ship.right = false
-			break
-	}
+	current_stage.keyUp(event)
 })
 
 document.body.addEventListener("mousedown", function(event) {
@@ -264,10 +76,8 @@ document.body.addEventListener("mousemove", function(event) {
 })
 
 function run() {
-	if (!pause) {
-		update()
-	}
-	render()
+	current_stage.update()
+	current_stage.render()
 
 	requestAnimationFrame(run)
 }
