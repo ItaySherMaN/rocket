@@ -41,17 +41,6 @@ let game_stage = null
 let menu_stage = null
 
 function setup() {
-	// let im = rocket_small_fire
-	// context.drawImage(im, 0, 0)
-	// console.log(im.width, im.height)
-	//
-	// let x = im.width - 172
-	// let y = im.height / 2
-	// context.fillStyle = 'red'
-	// context.beginPath()
-	// context.arc(x, y, 5, 0, PI + PI)
-	// context.fill()
-
 	game_stage = new GameStage()
 	menu_stage = new MenuStage()
 	current_stage = menu_stage
@@ -64,10 +53,12 @@ function init() {
 
 
 document.body.addEventListener("keydown", function(event) {
+	keyPressed[event.keyCode] = true
 	current_stage.keyDown(event)
 })
 
 document.body.addEventListener("keyup", function(event) {
+	keyPressed[event.keyCode] = false
 	current_stage.keyUp(event)
 })
 

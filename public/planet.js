@@ -15,13 +15,41 @@ vector.js
 
 class Planet extends Ball {
 
-	static min_speed = 3
-	static max_speed = 10
-
 	static min_radius = 30
 	static max_radius = 70
 
-	// static max_momentum = 500
+	static max_distance_from_ship = Math.max(width, height) * 0.8
+
+	static generate(other_balls, min_speed, max_speed) {
+		let planet = null
+		let random_angle = 0.3
+		let done = false
+		let r = Planet.max_distance_from_ship
+
+		while (!done) {
+			done = true
+			let angle = Math.random() * (PI + PI)
+			planet = new Planet(
+				new Vector(
+					ship.pos.x + r * Math.cos(angle),
+					ship.pos.y + r * Math.sin(angle)
+				),
+				Vector.fromAngle(
+					PI + angle + Math.random() * random_angle * 2 - random_angle,
+					Math.random() * (max_speed - min_speed) + min_speed
+				),
+				Math.random() * (Planet.max_radius - Planet.min_radius) + Planet.min_radius
+			)
+			for (let i = 0; i < other_balls.length; ++i) {
+				if (Ball.areColliding(planet, other_balls[i])) {
+					done = false
+					break
+				}
+			}
+		}
+
+		return planet
+	}
 
 	constructor(pos, vel, radius) {
 		super(pos, vel, radius)
@@ -46,40 +74,14 @@ class Planet extends Ball {
 				  c3 = new Vector(left_x, bottom_y).subtract(this.pos),
 				  c4 = new Vector(right_x, bottom_y).subtract(this.pos)
 			const c = this.vel
-  			// let a = c1
-  			// let b = c4
-			//
-  			// let ab = a.y * b.x - a.x * b.y
-  			// let cb = c.y * b.x - c.x * b.y
-  			// let ac = a.y * c.x - a.x * c.y
 
 			if (c.isBetween(c1, c4)) {
 				return false
 			}
 
-			// if ((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0)) {
-			// 	return false
-			// }
-
 			return !(c.isBetween(c2, c3))
-
-			// a = c2
-			// b = c3
-			//
-			// ab = a.y * b.x - a.x * b.y
-			// cb = c.y * b.x - c.x * b.y
-			// ac = a.y * c.x - a.x * c.y
-			//
-			// return !((ab > 0 && cb > 0 && ac > 0) || (ab < 0 && cb < 0 && ac < 0))
 		}
 
 		return false
 	}
-
-	headedToScreen() {
-
-
-	}
-
-
 }

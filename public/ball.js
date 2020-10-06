@@ -1,12 +1,3 @@
-/*
-class ball:
-
-pos: vector
-vel: velocity vector
-radius: float
-mass: float
-
-*/
 
 /*
 DEPENDENCIES:
@@ -14,19 +5,35 @@ vector.js
 
 */
 class Ball {
-	static G = 0.4
+	static G = 1
 
 	constructor(pos, vel, radius) {
 		this.pos = pos
 		this.vel = vel
 		this.radius = radius
-		this.mass = Ball.G * this.radius * this.radius
+		this.mass = this.radius * this.radius
 	}
 
 	// change position of a ball a fraction of the time
 	// 0 < time left <= 1
 	updatePos(time_left) {
 		this.pos = this.pos.add(this.vel.multiply(time_left))
+	}
+
+	// gravity force exerted on me by other_ball
+	gravityForce(other_ball) {
+		const dx = this.pos.x - other_ball.pos.x
+		const dy = this.pos.y - other_ball.pos.y
+		return Vector.fromAngle(
+			other_ball.pos.subtract(this.pos).getAngle(),
+			(Ball.G * this.mass * other_ball.mass) / (dx * dx + dy * dy)
+		)
+	}
+
+	// apply gravity force on both balls
+	static gravitate(ball_1, ball_2) {
+		ball_1.vel = ball_1.vel.add(ball_1.gravityForce(ball_2).multiply(1 / ball_1.mass))
+		ball_2.vel = ball_2.vel.add(ball_2.gravityForce(ball_1).multiply(1 / ball_2.mass))
 	}
 
 	// kintetic energy of the system of balls
@@ -49,6 +56,12 @@ class Ball {
 
 	// get a list of balls and update their positions using ellastic collisions
 	static updateBalls(balls) {
+		for (let i = 0; i < balls.length; ++i) {
+			for (let j = i + 1; j < balls.length; ++j) {
+				Ball.gravitate(balls[i], balls[j])
+			}
+		}
+
 		let ship_collided_planet = false
 
 		let time_left = 1.0
@@ -144,7 +157,9 @@ function right_time(ball_1, ball_2) {
 	if (d < 0) {
 		return NaN
 	}
+
 	const first = (-b - Math.sqrt(d)) / (a+a)
+
 	if (first < 0) {
 		return NaN
 	}

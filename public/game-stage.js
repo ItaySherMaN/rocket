@@ -1,12 +1,26 @@
-let planets_at_once
+const levels = [
+	new Level(2, 1, 2),
+	new Level(3, 1.5, 3.5),
+	new Level(3, 2, 5),
+	new Level(3, 3, 7),
+	new Level(4, 4, 9)
+]
+
+let current_level = levels[0]
+
+const background_color = 'rgb(35, 8, 78)'
 
 const pause_color = 'rgba(150, 150, 150, 0.5)'
 
 const score_font = '64px monospace'
 const score_color = 'rgb(255, 130, 171)'
+const score_x = 70
+const score_y = 100
 
 const game_over_font = '64px Tahoma'
 const game_over_color = 'rgb(119, 255, 102)'
+const game_over_x = width / 2 - 150
+const game_over_y = height / 2 - 200
 
 const coin_indicator_text_font = '24px Tahoma'
 const coin_indicator_text_stroke = 'black'
@@ -30,41 +44,40 @@ let coin_renderer = null
 let far_stars = null
 let stars_renderer = null
 
-//buttons
+// buttons
 let restart_button_down = false
 
 const restart_button_font = 'bold 60px Arial'
+const restart_button_color = 'rgb(119, 255, 102)'
 const restart_button_img_index = 1
 
-const restart_button_radius = 150
+const restart_button_radius = 130
 const restart_button_x = width * 400 / 1920
 const restart_button_y = height * 500 / 969
 
 let menu_button_down = false
 
 const menu_button_font = 'bold 60px Arial'
+const menu_button_color = 'rgb(119, 255, 102)'
 const menu_button_img_index = 2
 
 const menu_button_radius = 100
 const menu_button_x = width * 1300 / 1920
 const menu_button_y = height * 700 / 969
 
-//time
-let play_time = 0
+// time
+const level_time = 20000
+let play_time = 0 // (millis)
 let last_time_check = 0
-time_to_start_level2 = 20000
-time_to_start_level3 = 40000
-time_to_start_level4 = 60000
 
 class GameStage {
 	init() {
-		play_time = 0
-		last_time_check = new Date().getTime()
+		current_level = levels[0]
 		gameOverFlag = false
 		pause = false
 		restart_button_down = false
 		menu_button_down = false
-		this.update_game_difficulty()
+		this.updateGameDifficulty()
 		score = 0
 
 		balls = []
@@ -75,9 +88,17 @@ class GameStage {
 		planets = []
 		planets_renderer = []
 
-		for (let i = 0; i < planets_at_once; ++i) {
-			generatePlanet(Planet.min_speed, Planet.max_speed)
+		for (let i = 0; i < current_level.planets_at_once; ++i) {
+			const planet = Planet.generate(
+				balls,
+				current_level.planet_min_speed,
+				current_level.planet_max_speed
+			)
+			planets.push(planet)
+			balls.push(planet)
+			planets_renderer.push(new PlanetRenderer(planet))
 		}
+
 		generateCoin()
 
 		far_stars = []
@@ -89,18 +110,26 @@ class GameStage {
 		far_stars.forEach(star => {
 			stars_renderer.push(new StarRenderer(star))
 		})
+
+		play_time = 0
+		last_time_check = new Date().getTime()
 	}
 
 	update() {
-		this.update_time()
-		this.update_game_difficulty()
+		this.updateTime()
+		this.updateGameDifficulty()
+
 		if (!pause) {
-			let collided_coin = ship.update(planets, coin)
+			this.handleKeys()
+			if (!gameOverFlag) {
+				ship.update()
+			}
+			ship.updateRotation()
 			if (Ball.updateBalls(balls)) {
 				gameOver()
 			}
 
-			if (collided_coin) {
+			if (ship.collidedCoin()) {
 				coinCollision()
 			}
 			checkPlanets()
@@ -108,35 +137,46 @@ class GameStage {
 		}
 	}
 
-	update_time(){
-		let now = new Date().getTime()
-		if(!pause && !gameOverFlag){
-			play_time += now - last_time_check
-		}		
-		last_time_check = now 
+	handleKeys() {
+		if (keyPressed[SPACE]) {
+			if (gameOverFlag) {
+				ship.forward = 0
+			} else {
+				ship.forward = 2
+			}
+		} else if (keyPressed[ord['W']]) {
+			if (gameOverFlag) {
+				ship.forward = 0
+			} else {
+				ship.forward = 1
+			}
+		} else {
+			ship.forward = 0
+		}
+
+		if (keyPressed[ord['A']]) {
+			ship.left = true
+		} else {
+			ship.left = false
+		}
+		if (keyPressed[ord['D']]) {
+			ship.right = true
+		} else {
+			ship.right = false
+		}
 	}
 
-	update_game_difficulty(){
-		if(play_time < time_to_start_level2){
-			planets_at_once = 2
-			Planet.min_speed = 1
-			Planet.max_speed = 3
+	updateTime() {
+		let now = new Date().getTime()
+		if (!pause && !gameOverFlag) {
+			play_time += now - last_time_check
 		}
-		else if(play_time < time_to_start_level3){
-			planets_at_once = 3
-			Planet.min_speed = 1
-			Planet.max_speed = 3
-		}
-		else if(play_time < time_to_start_level4){
-			planets_at_once = 3
-			Planet.min_speed = 3
-			Planet.max_speed = 10
-		}
-		else{
-			planets_at_once = 3
-			Planet.min_speed = 5
-			Planet.max_speed = 15
-		}
+		last_time_check = now
+	}
+
+	updateGameDifficulty() {
+		let lvl_index = Math.min(parseInt(play_time / level_time), levels.length - 1)
+		current_level = levels[lvl_index]
 	}
 
 	render() {
@@ -164,11 +204,14 @@ class GameStage {
 		if (pause) {
 			this.renderPause()
 		}
+		if (pause || gameOverFlag) {
+			this.renderRestartButton()
+			this.renderMenuButton()
+		}
 	}
 
 	renderBackground() {
-		context.fillStyle = 'rgb(35, 8, 78)'
-		context.fillStyle = 'hsl'
+		context.fillStyle = background_color
 		context.fillRect(0, 0, width, height)
 	}
 
@@ -181,7 +224,7 @@ class GameStage {
 	renderScore() {
 		context.font = score_font
 		context.fillStyle = score_color
-		context.fillText(score, 70, 100)
+		context.fillText(score, score_x, score_y)
 	}
 
 	renderRestartButton() {
@@ -191,7 +234,7 @@ class GameStage {
 			restart_button_y,
 			restart_button_radius * 2,
 			restart_button_radius * 2
-		)//change
+		)
 
 		if (restart_button_down) {
 			context.fillStyle = 'rgba(200, 200, 200, 0.4)'
@@ -205,12 +248,12 @@ class GameStage {
 			context.fill()
 		}
 
-		context.fillStyle = title_color
+		context.fillStyle = restart_button_color
 		context.strokeStyle = 'black'
 		context.font = restart_button_font
 		context.lineWidth = 2
-		context.fillText("Restart", restart_button_x + 15, restart_button_y + restart_button_radius * 1.2)
-		context.strokeText("Restart", restart_button_x + 15, restart_button_y + restart_button_radius * 1.2)
+		context.fillText("Restart", restart_button_x + 25, restart_button_y + restart_button_radius + 15)
+		context.strokeText("Restart", restart_button_x + 25, restart_button_y + restart_button_radius + 15)
 	}
 
 	renderMenuButton() {
@@ -220,7 +263,7 @@ class GameStage {
 			menu_button_y,
 			menu_button_radius * 2,
 			menu_button_radius * 2
-		)//change
+		)
 
 		if (menu_button_down) {
 			context.fillStyle = 'rgba(200, 200, 200, 0.4)'
@@ -234,12 +277,12 @@ class GameStage {
 			context.fill()
 		}
 
-		context.fillStyle = title_color
+		context.fillStyle = menu_button_color
 		context.strokeStyle = 'black'
 		context.font = menu_button_font
 		context.lineWidth = 2
-		context.fillText("Menu", menu_button_x + 15, menu_button_y + menu_button_radius * 1.2)
-		context.strokeText("Menu", menu_button_x + 15, menu_button_y + menu_button_radius * 1.2)
+		context.fillText("Menu", menu_button_x + 20, menu_button_y + menu_button_radius + 15)
+		context.strokeText("Menu", menu_button_x + 20, menu_button_y + menu_button_radius + 15)
 	}
 
 	renderGameOver() {
@@ -247,13 +290,7 @@ class GameStage {
 
 		context.lineWidth = 3
 		context.font = game_over_font
-		context.fillText("Game over", width / 2 - 150, height / 2 - 200)
-		this.renderRestartButton()
-		this.renderMenuButton()
-		//this.renderMenuButton()
-		// context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
-		// context.drawImage(game_over_img, 0, 0, width, height / 2)
-		// context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
+		context.fillText("Game over", game_over_x, game_over_y)
 	}
 
 	renderShip() {
@@ -319,24 +356,10 @@ class GameStage {
 		context.fillStyle = pause_color
 		context.fillRect(width / 2 - pw / 2, height / 2 - ph / 2, pw * r, ph)
 		context.fillRect(width / 2 - pw / 2 + 2 * pw * r, height / 2 - ph / 2, pw * r, ph)
-		this.renderRestartButton()
-		this.renderMenuButton()
 	}
 
 	keyDown(event) {
 		switch (event.keyCode) {
-			case ord['W']:
-				ship.forward = 1
-				break
-			case ord['A']:
-				ship.left = true
-				break
-			case ord['D']:
-				ship.right = true
-				break
-			case SPACE:
-				ship.forward = 2
-				break
 			case ord['P']:
 				pause = !pause
 				break
@@ -345,73 +368,33 @@ class GameStage {
 
 	keyUp(event) {
 		switch (event.keyCode) {
-			case ord['W']:
-			case SPACE:
-				ship.forward = 0
-				break
-			case ord['A']:
-				ship.left = false
-				break
-			case ord['D']:
-				ship.right = false
-				break
+
 		}
 	}
 
 	mouseDown(event) {
-		if (clickedRestartButton() && (gameOverFlag || pause)) {
-			restart_button_down = true
-		}
-		if (clickedMenuButton() && (gameOverFlag || pause)) {
-			menu_button_down = true
+		if (gameOverFlag || pause) {
+			if (clickedRestartButton()) {
+				restart_button_down = true
+			}
+			if (clickedMenuButton()) {
+				menu_button_down = true
+			}
 		}
 	}
 
 	mouseUp(event) {
 		if (restart_button_down) {
+			game_stage.init()
 			current_stage = game_stage
 			restart_button_down = false
-			gameOverFlag = false
-			init()
 		}
-		if(menu_button_down){
+		if (menu_button_down){
+			menu_stage.init()
 			current_stage = menu_stage
 			menu_button_down = false
-			menu_stage.init()
 		}
 	}
-}
-
-function generatePlanet() {
-	let r = Math.max(width, height) * 0.8
-	let planet = null
-	let random_angle = 0.3
-	let done = false
-	while (!done) {
-		done = true
-		let angle = Math.random() * 2 * PI
-		planet = new Planet(
-			new Vector(
-				ship.pos.x + r * Math.cos(angle),
-				ship.pos.y + r * Math.sin(angle)
-			),
-			Vector.fromAngle(
-				PI + angle + Math.random() * random_angle * 2 - random_angle,
-				Math.random() * (Planet.max_speed - Planet.min_speed) + Planet.min_speed
-			),
-			Math.random() * (Planet.max_radius - Planet.min_radius) + Planet.min_radius
-		)
-		for (let i = 0; i < balls.length; ++i) {
-			if (Ball.areColliding(planet, balls[i])) {
-				done = false
-				break
-			}
-		}
-	}
-
-	planets.push(planet)
-	balls.push(planet)
-	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
 }
 
 function clickedRestartButton() {
@@ -430,10 +413,26 @@ function checkPlanets() {
 	for (let i = 0; i < planets.length; ++i) {
 		if (planets[i].isAway()) {
 			balls.splice(balls.indexOf(planets[i]), 1)
-			planets.splice(i, 1)
-			planets_renderer.splice(i, 1)
-			generatePlanet(Planet.min_speed, Planet.max_speed)
+			const new_planet = Planet.generate(
+				balls,
+				current_level.planet_min_speed,
+				current_level.planet_max_speed
+			)
+			balls.push(new_planet)
+			planets[i] = new_planet
+			planets_renderer[i] = new PlanetRenderer(new_planet)
 		}
+	}
+
+	for (let i = 0; i < current_level.planets_at_once - planets.length; ++i) {
+		const new_planet = Planet.generate(
+			balls,
+			current_level.planet_min_speed,
+			current_level.planet_max_speed
+		)
+		balls.push(new_planet)
+		planets.push(new_planet)
+		planets_renderer.push(new PlanetRenderer(new_planet))
 	}
 }
 
