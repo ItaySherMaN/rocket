@@ -1,4 +1,4 @@
-const planets_at_once = 3
+let planets_at_once
 
 const pause_color = 'rgba(150, 150, 150, 0.5)'
 
@@ -49,12 +49,22 @@ const menu_button_radius = 100
 const menu_button_x = width * 1300 / 1920
 const menu_button_y = height * 700 / 969
 
+//time
+let play_time = 0
+let last_time_check = 0
+time_to_start_level2 = 20000
+time_to_start_level3 = 40000
+time_to_start_level4 = 60000
+
 class GameStage {
 	init() {
+		play_time = 0
+		last_time_check = new Date().getTime()
 		gameOverFlag = false
 		pause = false
 		restart_button_down = false
 		menu_button_down = false
+		this.update_game_difficulty()
 		score = 0
 
 		balls = []
@@ -82,6 +92,8 @@ class GameStage {
 	}
 
 	update() {
+		this.update_time()
+		this.update_game_difficulty()
 		if (!pause) {
 			let collided_coin = ship.update(planets, coin)
 			if (Ball.updateBalls(balls)) {
@@ -93,6 +105,37 @@ class GameStage {
 			}
 			checkPlanets()
 			checkFarStars()
+		}
+	}
+
+	update_time(){
+		let now = new Date().getTime()
+		if(!pause && !gameOverFlag){
+			play_time += now - last_time_check
+		}		
+		last_time_check = now 
+	}
+
+	update_game_difficulty(){
+		if(play_time < time_to_start_level2){
+			planets_at_once = 2
+			Planet.min_speed = 1
+			Planet.max_speed = 3
+		}
+		else if(play_time < time_to_start_level3){
+			planets_at_once = 3
+			Planet.min_speed = 1
+			Planet.max_speed = 3
+		}
+		else if(play_time < time_to_start_level4){
+			planets_at_once = 3
+			Planet.min_speed = 3
+			Planet.max_speed = 10
+		}
+		else{
+			planets_at_once = 3
+			Planet.min_speed = 5
+			Planet.max_speed = 15
 		}
 	}
 
