@@ -36,13 +36,25 @@ let restart_button_down = false
 const restart_button_font = 'bold 60px Arial'
 const restart_button_img_index = 1
 
-const restart_button_radius = 75
-const restart_button_x = width * 600 / 1920
+const restart_button_radius = 150
+const restart_button_x = width * 400 / 1920
 const restart_button_y = height * 500 / 969
+
+let menu_button_down = false
+
+const menu_button_font = 'bold 60px Arial'
+const menu_button_img_index = 2
+
+const menu_button_radius = 100
+const menu_button_x = width * 1300 / 1920
+const menu_button_y = height * 700 / 969
 
 class GameStage {
 	init() {
+		gameOverFlag = false
 		pause = false
+		restart_button_down = false
+		menu_button_down = false
 		score = 0
 
 		balls = []
@@ -158,6 +170,35 @@ class GameStage {
 		context.strokeText("Restart", restart_button_x + 15, restart_button_y + restart_button_radius * 1.2)
 	}
 
+	renderMenuButton() {
+		context.drawImage(
+			planet_images[menu_button_img_index],
+			menu_button_x,
+			menu_button_y,
+			menu_button_radius * 2,
+			menu_button_radius * 2
+		)//change
+
+		if (menu_button_down) {
+			context.fillStyle = 'rgba(200, 200, 200, 0.4)'
+			context.beginPath()
+			context.arc(
+				menu_button_x + menu_button_radius,
+				menu_button_y + menu_button_radius,
+				menu_button_radius,
+				0, PI + PI
+			)
+			context.fill()
+		}
+
+		context.fillStyle = title_color
+		context.strokeStyle = 'black'
+		context.font = menu_button_font
+		context.lineWidth = 2
+		context.fillText("Menu", menu_button_x + 15, menu_button_y + menu_button_radius * 1.2)
+		context.strokeText("Menu", menu_button_x + 15, menu_button_y + menu_button_radius * 1.2)
+	}
+
 	renderGameOver() {
 		context.fillStyle = game_over_color
 
@@ -165,6 +206,7 @@ class GameStage {
 		context.font = game_over_font
 		context.fillText("Game over", width / 2 - 150, height / 2 - 200)
 		this.renderRestartButton()
+		this.renderMenuButton()
 		//this.renderMenuButton()
 		// context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
 		// context.drawImage(game_over_img, 0, 0, width, height / 2)
@@ -234,6 +276,8 @@ class GameStage {
 		context.fillStyle = pause_color
 		context.fillRect(width / 2 - pw / 2, height / 2 - ph / 2, pw * r, ph)
 		context.fillRect(width / 2 - pw / 2 + 2 * pw * r, height / 2 - ph / 2, pw * r, ph)
+		this.renderRestartButton()
+		this.renderMenuButton()
 	}
 
 	keyDown(event) {
@@ -268,8 +312,11 @@ class GameStage {
 	}
 
 	mouseDown(event) {
-		if (clickedRestartButton() && gameOverFlag) {
+		if (clickedRestartButton() && (gameOverFlag || pause)) {
 			restart_button_down = true
+		}
+		if (clickedMenuButton() && (gameOverFlag || pause)) {
+			menu_button_down = true
 		}
 	}
 
@@ -279,6 +326,11 @@ class GameStage {
 			restart_button_down = false
 			gameOverFlag = false
 			init()
+		}
+		if(menu_button_down){
+			current_stage = menu_stage
+			menu_button_down = false
+			menu_stage.init()
 		}
 	}
 }
@@ -319,6 +371,12 @@ function clickedRestartButton() {
 	const dx = mouseX - restart_button_x - restart_button_radius
 	const dy = mouseY - restart_button_y - restart_button_radius
 	return dx * dx + dy * dy <= restart_button_radius * restart_button_radius
+}
+
+function clickedMenuButton() {
+	const dx = mouseX - menu_button_x - menu_button_radius
+	const dy = mouseY - menu_button_y - menu_button_radius
+	return dx * dx + dy * dy <= menu_button_radius * menu_button_radius
 }
 
 function checkPlanets() {

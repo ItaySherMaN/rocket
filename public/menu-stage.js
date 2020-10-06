@@ -82,6 +82,7 @@ class MenuStage {
 	mouseDown(event) {
 		if (clickedPlayButton()) {
 			play_button_down = true
+			game_stage.init()
 		}
 	}
 }
