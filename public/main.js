@@ -12,7 +12,7 @@ const planet_img_names = [
 	"planet_5.png",
 	"planet_6.png",
 	"planet_7.png",
-	"planet_8.png"
+	//"planet_8.png"
 ]
 
 const ship_img_names = [
@@ -42,8 +42,8 @@ function setup(images) {
 	coin_image = images[2]
 	game_over_img = images[3]
 	new_game_img = images[4]
-	planet_images = images.slice(5, 5 + 8)
-	menu_image = images[13]
+	planet_images = images.slice(5, 5 + 7)
+	menu_image = images[12]
 
 	game_stage = new GameStage()
 	menu_stage = new MenuStage()

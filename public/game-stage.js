@@ -30,9 +30,20 @@ let coin_renderer = null
 let far_stars = null
 let stars_renderer = null
 
+//buttons
+let restart_button_down = false
+
+const restart_button_font = 'bold 60px Arial'
+const restart_button_img_index = 1
+
+const restart_button_radius = 75
+const restart_button_x = width * 600 / 1920
+const restart_button_y = height * 500 / 969
+
 class GameStage {
 	init() {
 		pause = false
+		score = 0
 
 		balls = []
 		ship = new Ship(width / 2, height / 2)
@@ -118,12 +129,43 @@ class GameStage {
 		context.fillText(score, 70, 100)
 	}
 
+	renderRestartButton() {
+		context.drawImage(
+			planet_images[restart_button_img_index],
+			restart_button_x,
+			restart_button_y,
+			restart_button_radius * 2,
+			restart_button_radius * 2
+		)//change
+
+		if (restart_button_down) {
+			context.fillStyle = 'rgba(200, 200, 200, 0.4)'
+			context.beginPath()
+			context.arc(
+				restart_button_x + restart_button_radius,
+				restart_button_y + restart_button_radius,
+				restart_button_radius,
+				0, PI + PI
+			)
+			context.fill()
+		}
+
+		context.fillStyle = title_color
+		context.strokeStyle = 'black'
+		context.font = restart_button_font
+		context.lineWidth = 2
+		context.fillText("Restart", restart_button_x + 15, restart_button_y + restart_button_radius * 1.2)
+		context.strokeText("Restart", restart_button_x + 15, restart_button_y + restart_button_radius * 1.2)
+	}
+
 	renderGameOver() {
 		context.fillStyle = game_over_color
 
 		context.lineWidth = 3
 		context.font = game_over_font
 		context.fillText("Game over", width / 2 - 150, height / 2 - 200)
+		this.renderRestartButton()
+		//this.renderMenuButton()
 		// context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
 		// context.drawImage(game_over_img, 0, 0, width, height / 2)
 		// context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
@@ -226,11 +268,18 @@ class GameStage {
 	}
 
 	mouseDown(event) {
-
+		if (clickedRestartButton() && gameOverFlag) {
+			restart_button_down = true
+		}
 	}
 
 	mouseUp(event) {
-
+		if (restart_button_down) {
+			current_stage = game_stage
+			restart_button_down = false
+			gameOverFlag = false
+			init()
+		}
 	}
 }
 
@@ -264,6 +313,12 @@ function generatePlanet() {
 	planets.push(planet)
 	balls.push(planet)
 	planets_renderer.push(new PlanetRenderer(planet, parseInt(Math.random() * planet_images.length)))
+}
+
+function clickedRestartButton() {
+	const dx = mouseX - restart_button_x - restart_button_radius
+	const dy = mouseY - restart_button_y - restart_button_radius
+	return dx * dx + dy * dy <= restart_button_radius * restart_button_radius
 }
 
 function checkPlanets() {
