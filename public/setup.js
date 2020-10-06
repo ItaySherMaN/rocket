@@ -38,6 +38,6 @@ function loadImage(url) {
 			resolve(image)
 		})
 
-		image.src = url
+		image.src = 'assets/' + url
 	})
 }

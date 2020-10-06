@@ -12,7 +12,8 @@ right: boolean
 
 class Ship extends Ball {
 
-	static forwardForce = 80 * Ball.G
+	static smallForwardForce = 80 * Ball.G
+	static bigForwardForce = 400 * Ball.G
 	static angleChange = (2 * PI) / 100
 	static angleForce = 10
 
@@ -25,7 +26,7 @@ class Ship extends Ball {
 		this.dir = 0
 		this.dir_vel = 0
 
-		this.forward = false
+		this.forward = 0
 		this.left = false
 		this.right = false
 	}
@@ -76,8 +77,10 @@ class Ship extends Ball {
 			collided_coin = true
 		}
 
-		if (this.forward) {
-			allForces = allForces.add(Vector.fromAngle(this.dir, Ship.forwardForce))
+		if (this.forward === 1) {
+			allForces = allForces.add(Vector.fromAngle(this.dir, Ship.smallForwardForce))
+		} else if (this.forward === 2) {
+			allForces = allForces.add(Vector.fromAngle(this.dir, Ship.bigForwardForce))
 		}
 
 		if (this.left) {
@@ -87,7 +90,7 @@ class Ship extends Ball {
 			this.dir += Ship.angleChange
 		}
 
-		this.correctAngle(this.dir)
+		this.correctAngle()
 		this.activateForce(allForces)
 		// this.pos = this.pos.add(this.vel)
 		return collided_coin
@@ -125,7 +128,7 @@ class Ship extends Ball {
 		this.activateForce(allForces)
 		// this.pos = this.pos.add(this.vel)
 		this.dir += this.dir_vel
-		this.correctAngle(this.dir)
+		this.correctAngle()
 		return collisionArray
 	}
 

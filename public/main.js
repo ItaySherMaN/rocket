@@ -16,8 +16,9 @@ const planet_img_names = [
 ]
 
 const ship_img_names = [
-	"rocket_model_no_fire.png",
-	"rocket_model_yes_fire.png"
+	"rocket_no_fire.png",
+	"rocket_small_fire.png",
+	"rocket_big_fire.png"
 ]
 
 const menu_screen_img_name = 'menu_screen.jpeg'
@@ -25,25 +26,31 @@ const menu_screen_img_name = 'menu_screen.jpeg'
 // your dynamic letiables here
 
 
-let game_over_img = null
-let rocket_model_no_fire = null
-let rocket_model_yes_fire = null
+let rocket_no_fire = null
+let rocket_small_fire = null
+let rocket_big_fire = null
+
 let planet_images = null
-let coin_images = null
+
+let coin_image = null
+
 let menu_image = null
 
 let current_stage = null
 let game_stage = null
 let menu_stage = null
 
-function setup(images) {
-	rocket_model_no_fire = images[0]
-	rocket_model_yes_fire = images[1]
-	coin_image = images[2]
-	game_over_img = images[3]
-	new_game_img = images[4]
-	planet_images = images.slice(5, 5 + 7)
-	menu_image = images[12]
+function setup() {
+	// let im = rocket_small_fire
+	// context.drawImage(im, 0, 0)
+	// console.log(im.width, im.height)
+	//
+	// let x = im.width - 172
+	// let y = im.height / 2
+	// context.fillStyle = 'red'
+	// context.beginPath()
+	// context.arc(x, y, 5, 0, PI + PI)
+	// context.fill()
 
 	game_stage = new GameStage()
 	menu_stage = new MenuStage()
@@ -88,16 +95,20 @@ function run() {
 	requestAnimationFrame(run)
 }
 
-Promise.all(
-	ship_img_names
-	.concat(coin_img_name)
-	.concat(gameOver_img_name)
-	.concat(newGame_img_name)
-	.concat(planet_img_names)
-	.concat(menu_screen_img_name)
-	.map(name => loadImage('assets/' + name))
-).then(images => {
-	setup(images)
+loadImage(coin_img_name).then(image => {
+	coin_image = image
+	return loadImage(menu_screen_img_name)
+}).then(image => {
+	menu_image = image
+	return Promise.all(ship_img_names.map(name => loadImage(name)))
+}).then(images => {
+	rocket_no_fire = images[0]
+	rocket_small_fire = images[1]
+	rocket_big_fire = images[2]
+	return Promise.all(planet_img_names.map(name => loadImage(name)))
+}).then(images => {
+	planet_images = images
+	setup()
 	init()
 	run()
 })

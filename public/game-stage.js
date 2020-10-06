@@ -282,14 +282,17 @@ class GameStage {
 
 	keyDown(event) {
 		switch (event.keyCode) {
-			case UP:
-				ship.forward = true
+			case ord['W']:
+				ship.forward = 1
 				break
-			case LEFT:
+			case ord['A']:
 				ship.left = true
 				break
-			case RIGHT:
+			case ord['D']:
 				ship.right = true
+				break
+			case SPACE:
+				ship.forward = 2
 				break
 			case ord['P']:
 				pause = !pause
@@ -299,13 +302,14 @@ class GameStage {
 
 	keyUp(event) {
 		switch (event.keyCode) {
-			case UP:
-				ship.forward = false
+			case ord['W']:
+			case SPACE:
+				ship.forward = 0
 				break
-			case LEFT:
+			case ord['A']:
 				ship.left = false
 				break
-			case RIGHT:
+			case ord['D']:
 				ship.right = false
 				break
 		}
