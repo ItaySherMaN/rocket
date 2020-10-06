@@ -11,6 +11,11 @@ rotate(angle): rotate vector by angle
 
 */
 
+/*
+DEPENDENCIES:
+none
+*/
+
 class Vector {
 	constructor(x, y) {
 		this.x = x

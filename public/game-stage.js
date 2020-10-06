@@ -27,6 +27,8 @@ let ship_renderer = null
 let planets_renderer = null
 let coin_renderer = null
 
+let far_stars = null
+let stars_renderer = null
 
 class GameStage {
 	init() {
@@ -44,6 +46,16 @@ class GameStage {
 			generatePlanet(Planet.min_speed, Planet.max_speed)
 		}
 		generateCoin()
+
+		far_stars = []
+		for (let i = 0; i < 160; ++i) {
+			far_stars.push(Star.generateVisible(far_stars))
+		}
+
+		stars_renderer = []
+		far_stars.forEach(star => {
+			stars_renderer.push(new StarRenderer(star))
+		})
 	}
 
 	update() {
@@ -57,34 +69,129 @@ class GameStage {
 				coinCollision()
 			}
 			checkPlanets()
+			checkFarStars()
 		}
 	}
 
 	render() {
-		renderBackground()
+		this.renderBackground()
 
 		if (focus_ship) {
 			context.translate(width / 2 - ship.pos.x, height / 2 - ship.pos.y)
-			renderShip()
-			renderCoin()
-			renderPlanets()
-			// renderCoinArrow()
+			this.renderFarStars()
+			this.renderShip()
+			this.renderCoin()
+			this.renderPlanets()
 			context.translate(ship.pos.x - width / 2, ship.pos.y - height / 2)
 		} else {
-			renderShip()
-			renderCoin()
-			renderPlanets()
-			// renderCoinArrow()
+			this.renderFarStars()
+			this.renderShip()
+			this.renderCoin()
+			this.renderPlanets()
 		}
 		if (gameOverFlag) {
-			renderGameOver()
+			this.renderGameOver()
 		}
-		renderCoinArrow()
-		renderScore()
+		this.renderCoinArrow()
+		this.renderScore()
 
 		if (pause) {
-			renderPause()
+			this.renderPause()
 		}
+	}
+
+	renderBackground() {
+		context.fillStyle = 'rgb(35, 8, 78)'
+		context.fillStyle = 'hsl'
+		context.fillRect(0, 0, width, height)
+	}
+
+	renderFarStars() {
+		stars_renderer.forEach(star_renderer => {
+			star_renderer.render()
+		})
+	}
+
+	renderScore() {
+		context.font = score_font
+		context.fillStyle = score_color
+		context.fillText(score, 70, 100)
+	}
+
+	renderGameOver() {
+		context.fillStyle = game_over_color
+
+		context.lineWidth = 3
+		context.font = game_over_font
+		context.fillText("Game over", width / 2 - 150, height / 2 - 200)
+		// context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
+		// context.drawImage(game_over_img, 0, 0, width, height / 2)
+		// context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
+	}
+
+	renderShip() {
+		ship_renderer.render()
+	}
+
+	renderPlanets() {
+		planets_renderer.forEach(planet_renderer => {
+			planet_renderer.render()
+		})
+	}
+
+	renderCoin() {
+		coin_renderer.render()
+	}
+
+	renderCoinArrow() {
+		if (coin.outsideScreen()) {
+			const ship_to_coin = coin.pos.subtract(ship.pos)
+			const c1 = new Vector(-width / 2, -height / 2)
+			const c2 = new Vector(width / 2, -height / 2)
+			const c3 = new Vector(-width / 2, height / 2)
+			const c4 = new Vector(width / 2, height / 2)
+
+			const x1 = width / 2
+			const y1 = height / 2
+			const x2 = x1 + ship_to_coin.x
+			const y2 = y1 + ship_to_coin.y
+
+			let x = 0
+			let y = y2 - x2 * (y2 - y1) / (x2 - x1)
+
+			if (ship_to_coin.isBetween(c1, c2)) {
+				x = x2 - y2 * (x2 - x1) / (y2 - y1)
+				y = 0
+			} else if (ship_to_coin.isBetween(c2, c4)) {
+				x = width
+				y = y2 - (x2 - x) * (y2 - y1) / (x2 - x1)
+			} else if (ship_to_coin.isBetween(c3, c4)) {
+				x = x2 - (y2 - height) * (x2 - x1) / (y2 - y1)
+				y = height
+			}
+
+			context.fillStyle = coin_indicator_color
+			context.beginPath()
+			context.arc(x, y, coin.radius, 0, PI + PI)
+			context.fill()
+
+			x = Math.min(Math.max(x, 10), width - 100)
+			y = Math.min(Math.max(y, 40), height - 20)
+
+			context.strokeStyle = coin_indicator_text_stroke
+			context.font = coin_indicator_text_font
+			context.fillText(parseInt(ship.pos.distFromPos(coin.pos)), x, y)
+		}
+	}
+
+	renderPause() {
+		const pw = 200
+		const ph = 200
+		const r = 1 / 3
+
+		context.fillStyle = pause_color
+		context.fillRect(width / 2 - pw / 2, height / 2 - ph / 2, pw * r, ph)
+		context.fillRect(width / 2 - pw / 2 + 2 * pw * r, height / 2 - ph / 2, pw * r, ph)
 	}
 
 	keyDown(event) {
@@ -170,6 +277,15 @@ function checkPlanets() {
 	}
 }
 
+function checkFarStars() {
+	for (let i = 0; i < far_stars.length; ++i) {
+		if (!far_stars[i].isInRange()) {
+			far_stars[i] = Star.generateInvisible(far_stars)
+			stars_renderer[i] = new StarRenderer(far_stars[i])
+		}
+	}
+}
+
 function generateCoin() {
 	const left_x = ship.pos.x - width / 2
 	const top_y = ship.pos.y - height / 2
@@ -181,7 +297,7 @@ function generateCoin() {
 			left_x + r + (width - r - r) * Math.random(),
 			top_y + r + (height - r - r) * Math.random()
 		))
-		if (coin.pos.distFromPos(ship.pos) < Coin.minimal_distance) {
+		if (coin.pos.distFromPos(ship.pos) < Coin.min_distance_from_ship) {
 			done = false
 		} else {
 			for (let i = 0; i < balls.length; ++i) {
@@ -204,102 +320,4 @@ function coinCollision() {
 	if (!gameOverFlag) {
 		score += 1
 	}
-}
-
-function renderScore() {
-	context.font = score_font
-	context.fillStyle = score_color
-	context.fillText(score, 70, 100)
-}
-
-function renderGameOver() {
-	context.fillStyle = game_over_color
-
-	context.lineWidth = 3
-	context.font = game_over_font
-	context.fillText("Game over", width / 2 - 150, height / 2 - 200)
-	// context.strokeText("Game over", width / 2 - 150, height / 2 - 200)
-	// context.drawImage(game_over_img, 0, 0, width, height / 2)
-	// context.drawImage(new_game_img, 0, height * 3 / 4, width, height / 4)
-}
-
-function renderBackground() {
-	context.fillStyle = 'rgb(53, 32, 106)'
-	context.fillRect(0, 0, width, height)
-}
-
-function renderShip() {
-	ship_renderer.render()
-}
-
-function renderPlanets() {
-	planets_renderer.forEach(planet_renderer => {
-		planet_renderer.render()
-	})
-
-	// TEMP!
-	context.lineWidth = 2
-	context.strokeStyle = 'black'
-	planets.forEach(planet => {
-		context.beginPath()
-		context.moveTo(ship.pos.x, ship.pos.y)
-		context.lineTo(ship.planetForce(planet).x + ship.pos.x, ship.planetForce(planet).y + ship.pos.y)
-		context.stroke()
-	})
-	// END TEMP
-}
-
-function renderCoin() {
-	coin_renderer.render()
-}
-
-function renderCoinArrow() {
-	if (coin.outsideScreen()) {
-		const ship_to_coin = coin.pos.subtract(ship.pos)
-		const c1 = new Vector(-width / 2, -height / 2)
-		const c2 = new Vector(width / 2, -height / 2)
-		const c3 = new Vector(-width / 2, height / 2)
-		const c4 = new Vector(width / 2, height / 2)
-
-		const x1 = width / 2
-		const y1 = height / 2
-		const x2 = x1 + ship_to_coin.x
-		const y2 = y1 + ship_to_coin.y
-
-		let x = 0
-		let y = y2 - x2 * (y2 - y1) / (x2 - x1)
-
-		if (ship_to_coin.isBetween(c1, c2)) {
-			x = x2 - y2 * (x2 - x1) / (y2 - y1)
-			y = 0
-		} else if (ship_to_coin.isBetween(c2, c4)) {
-			x = width
-			y = y2 - (x2 - x) * (y2 - y1) / (x2 - x1)
-		} else if (ship_to_coin.isBetween(c3, c4)) {
-			x = x2 - (y2 - height) * (x2 - x1) / (y2 - y1)
-			y = height
-		}
-
-		context.fillStyle = coin_indicator_color
-		context.beginPath()
-		context.arc(x, y, coin.radius, 0, PI + PI)
-		context.fill()
-
-		x = Math.min(Math.max(x, 10), width - 100)
-		y = Math.min(Math.max(y, 40), height - 20)
-
-		context.strokeStyle = coin_indicator_text_stroke
-		context.font = coin_indicator_text_font
-		context.fillText(parseInt(ship.pos.distFromPos(coin.pos)), x, y)
-	}
-}
-
-function renderPause() {
-	const pw = 200
-	const ph = 200
-	const r = 1 / 3
-
-	context.fillStyle = pause_color
-	context.fillRect(width / 2 - pw / 2, height / 2 - ph / 2, pw * r, ph)
-	context.fillRect(width / 2 - pw / 2 + 2 * pw * r, height / 2 - ph / 2, pw * r, ph)
 }

@@ -1,7 +1,0 @@
-
-class Menu {
-
-	static render() {
-		
-	}
-}

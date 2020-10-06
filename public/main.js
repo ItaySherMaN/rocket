@@ -20,6 +20,8 @@ const ship_img_names = [
 	"rocket_model_yes_fire.png"
 ]
 
+const menu_screen_img_name = 'menu_screen.jpeg'
+
 // your dynamic letiables here
 
 
@@ -28,6 +30,7 @@ let rocket_model_no_fire = null
 let rocket_model_yes_fire = null
 let planet_images = null
 let coin_images = null
+let menu_image = null
 
 let current_stage = null
 let game_stage = null
@@ -39,11 +42,12 @@ function setup(images) {
 	coin_image = images[2]
 	game_over_img = images[3]
 	new_game_img = images[4]
-	planet_images = images.slice(5, images.length)
+	planet_images = images.slice(5, 5 + 8)
+	menu_image = images[13]
 
 	game_stage = new GameStage()
 	menu_stage = new MenuStage()
-	current_stage = game_stage
+	current_stage = menu_stage
 }
 
 function init() {
@@ -62,10 +66,12 @@ document.body.addEventListener("keyup", function(event) {
 
 document.body.addEventListener("mousedown", function(event) {
 	mouseDown = true
+	current_stage.mouseDown(event)
 })
 
 document.body.addEventListener("mouseup", function(event) {
 	mouseDown = false
+	current_stage.mouseUp(event)
 })
 
 document.body.addEventListener("mousemove", function(event) {
@@ -88,6 +94,7 @@ Promise.all(
 	.concat(gameOver_img_name)
 	.concat(newGame_img_name)
 	.concat(planet_img_names)
+	.concat(menu_screen_img_name)
 	.map(name => loadImage('assets/' + name))
 ).then(images => {
 	setup(images)

@@ -7,6 +7,12 @@ radius: float
 mass: float
 
 */
+
+/*
+DEPENDENCIES:
+vector.js
+
+*/
 class Ball {
 	static G = 0.4
 

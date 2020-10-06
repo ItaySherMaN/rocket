@@ -8,6 +8,11 @@ when in touch with ship lose life or die
 
 */
 
+/*
+DEPENDENCIES:
+vector.js
+*/
+
 class Planet extends Ball {
 
 	static min_speed = 3
