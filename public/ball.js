@@ -67,11 +67,11 @@ class Ball {
 		let time_left = 1.0
 		while (time_left > 0) {
 			let a = time_left
-			for (let i = 0; i < balls.length; i++) {
-				for (let j = i + 1; j < balls.length; j++) {
+			for (let i = 0; i < balls.length; ++i) {
+				for (let j = i + 1; j < balls.length; ++j) {
 					let b1 = balls[i],
 						b2 = balls[j]
-					let x = Math.min(right_time(b1, b2), right_time(b2, b1))
+					let x = Math.min(rightTime(b1, b2), rightTime(b2, b1))
 					if (x !== NaN) {
 						if (x < a) {
 							a = x
@@ -80,11 +80,11 @@ class Ball {
 				}
 			}
 			let pairs = []
-			for (let i = 0; i < balls.length; i++) {
-				for (let j = i + 1; j < balls.length; j++) {
+			for (let i = 0; i < balls.length; ++i) {
+				for (let j = i + 1; j < balls.length; ++j) {
 					let b1 = balls[i],
 						b2 = balls[j]
-					let x = Math.min(right_time(b1, b2), right_time(b2, b1))
+					let x = Math.min(rightTime(b1, b2), rightTime(b2, b1))
 					if (x !== NaN) {
 						if (x <= a + 5e-13) { // floating point error :(
 							if (b1 === ship || b2 === ship) {
@@ -96,7 +96,7 @@ class Ball {
 				}
 			}
 
-			for (let i = 0; i < balls.length; i++) {
+			for (let i = 0; i < balls.length; ++i) {
 				balls[i].updatePos(a)
 			}
 			time_left -= a
@@ -132,10 +132,10 @@ class Ball {
 }
 
 /*
-right_time: returns the time in units of 1/60 seconds in
+rightTime: returns the time in units of 1/60 seconds in
 which ball_1 and ball_2 will collide
 */
-function right_time(ball_1, ball_2) {
+function rightTime(ball_1, ball_2) {
 	const a1 = ball_1.pos.x
 	const a2 = ball_1.vel.x
 	const a3 = ball_2.pos.x

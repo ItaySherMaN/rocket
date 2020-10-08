@@ -25,7 +25,7 @@ const menu_screen_img_name = 'menu_screen.jpeg'
 
 // your dynamic letiables here
 
-
+let rocket_images = null
 let rocket_no_fire = null
 let rocket_small_fire = null
 let rocket_big_fire = null
@@ -53,6 +53,7 @@ function init() {
 
 
 document.body.addEventListener("keydown", function(event) {
+	console.log(event.keyCode)
 	keyPressed[event.keyCode] = true
 	current_stage.keyDown(event)
 })
@@ -93,9 +94,7 @@ loadImage(coin_img_name).then(image => {
 	menu_image = image
 	return Promise.all(ship_img_names.map(name => loadImage(name)))
 }).then(images => {
-	rocket_no_fire = images[0]
-	rocket_small_fire = images[1]
-	rocket_big_fire = images[2]
+	rocket_images = images
 	return Promise.all(planet_img_names.map(name => loadImage(name)))
 }).then(images => {
 	planet_images = images

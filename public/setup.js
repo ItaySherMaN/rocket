@@ -29,7 +29,7 @@ const ord = {}
 // key managing
 
 const keyPressed = []
-for (let i = 0; i < 256; i++) {
+for (let i = 0; i < 256; ++i) {
 	keyPressed.push(false)
 }
 

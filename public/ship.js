@@ -67,7 +67,7 @@ class Ship extends Ball {
 	update() {
 		// let force = new Vector(0, 0)
 
-		// for (let i = 0; i < planets.length; i++) {
+		// for (let i = 0; i < planets.length; ++i) {
 		// 	force = allForces.add(this.planetForce(planets[i]))
 		// }
 

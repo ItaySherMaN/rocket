@@ -1,18 +1,25 @@
 const levels = [
+	// new Level(0, 0, 0),
 	new Level(2, 1, 2),
-	new Level(3, 1.5, 3.5),
-	new Level(3, 2, 5),
-	new Level(3, 3, 7),
-	new Level(4, 4, 9)
+	new Level(3, 1.5, 3),
+	new Level(3, 2, 4),
+	new Level(3, 3, 5.5),
+	new Level(4, 3.5, 6.5),
+	new Level(4, 3.5, 7.5),
+	new Level(4, 4, 9),
+	new Level(5, 4, 9),
+	new Level(5, 4.5, 9),
+	new Level(5, 5, 9.5)
 ]
 
-let current_level = levels[0]
+let lvl_index = 0
+let current_level = levels[lvl_index]
 
 const background_color = 'rgb(35, 8, 78)'
 
 const pause_color = 'rgba(150, 150, 150, 0.5)'
 
-const score_font = '64px monospace'
+const score_font = 'bold 64px Courier'
 const score_color = 'rgb(255, 130, 171)'
 const score_x = 70
 const score_y = 100
@@ -41,6 +48,7 @@ let ship_renderer = null
 let planets_renderer = null
 let coin_renderer = null
 
+const num_stars = 240
 let far_stars = null
 let stars_renderer = null
 
@@ -66,25 +74,28 @@ const menu_button_x = width * 1300 / 1920
 const menu_button_y = height * 700 / 969
 
 // time
-const level_time = 20000
+const level_time = 20 * 1000
 let play_time = 0 // (millis)
 let last_time_check = 0
 
 class GameStage {
 	init() {
-		current_level = levels[0]
+		lvl_index = 0
+		current_level = levels[lvl_index]
 		gameOverFlag = false
 		pause = false
 		restart_button_down = false
 		menu_button_down = false
-		this.updateGameDifficulty()
 		score = 0
 
 		balls = []
+
+		// create ship
 		ship = new Ship(width / 2, height / 2)
 		balls.push(ship)
 		ship_renderer = new ShipRenderer(ship)
 
+		// create planets
 		planets = []
 		planets_renderer = []
 
@@ -99,10 +110,14 @@ class GameStage {
 			planets_renderer.push(new PlanetRenderer(planet))
 		}
 
-		generateCoin()
+		// create coin
+		coin = Coin.generate()
+		// balls.push(coin)
+		coin_renderer = new CoinRenderer(coin)
 
+		// create far stars
 		far_stars = []
-		for (let i = 0; i < 160; ++i) {
+		for (let i = 0; i < num_stars; ++i) {
 			far_stars.push(Star.generateVisible(far_stars))
 		}
 
@@ -111,6 +126,7 @@ class GameStage {
 			stars_renderer.push(new StarRenderer(star))
 		})
 
+		// start time management
 		play_time = 0
 		last_time_check = new Date().getTime()
 	}
@@ -175,7 +191,7 @@ class GameStage {
 	}
 
 	updateGameDifficulty() {
-		let lvl_index = Math.min(parseInt(play_time / level_time), levels.length - 1)
+		lvl_index = Math.min(Math.floor(play_time / level_time), levels.length - 1)
 		current_level = levels[lvl_index]
 	}
 
@@ -212,12 +228,14 @@ class GameStage {
 
 	renderBackground() {
 		context.fillStyle = background_color
-		context.fillRect(0, 0, width, height)
+		context.fillRect(-1, -1, width + 2, height + 2)
 	}
 
 	renderFarStars() {
 		stars_renderer.forEach(star_renderer => {
-			star_renderer.render()
+			if (star_renderer.star.isVisible()) {
+				star_renderer.render()
+			}
 		})
 	}
 
@@ -339,12 +357,15 @@ class GameStage {
 			context.arc(x, y, coin.radius, 0, PI + PI)
 			context.fill()
 
-			x = Math.min(Math.max(x, 10), width - 100)
-			y = Math.min(Math.max(y, 40), height - 20)
-
 			context.strokeStyle = coin_indicator_text_stroke
 			context.font = coin_indicator_text_font
-			context.fillText(parseInt(ship.pos.distFromPos(coin.pos)), x, y)
+
+			let text = parseInt(ship.pos.distFromPos(coin.pos)).toString()
+
+			x = Math.min(Math.max(x, 25), width - context.measureText(text).width - 25)
+			y = Math.min(Math.max(y, 40), height - 20)
+
+			context.fillText(text, x, y)
 		}
 	}
 
@@ -445,37 +466,13 @@ function checkFarStars() {
 	}
 }
 
-function generateCoin() {
-	const left_x = ship.pos.x - width / 2
-	const top_y = ship.pos.y - height / 2
-	let done = false
-	let r = Coin.coin_radius
-	while (!done) {
-		done = true
-		coin = new Coin(new Vector(
-			left_x + r + (width - r - r) * Math.random(),
-			top_y + r + (height - r - r) * Math.random()
-		))
-		if (coin.pos.distFromPos(ship.pos) < Coin.min_distance_from_ship) {
-			done = false
-		} else {
-			for (let i = 0; i < balls.length; ++i) {
-				if (Ball.areColliding(coin, balls[i])) {
-					done = false
-					break
-				}
-			}
-		}
-	}
-	coin_renderer = new CoinRenderer(coin)
-}
-
 function gameOver() {
 	gameOverFlag = true
 }
 
 function coinCollision() {
-	generateCoin()
+	coin = Coin.generate()
+	coin_renderer.coin = coin
 	if (!gameOverFlag) {
 		score += 1
 	}
